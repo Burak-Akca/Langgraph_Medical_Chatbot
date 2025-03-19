@@ -1,3 +1,4 @@
+README.md
 setup.py
 LLM_MEDICAL_CHATBOT_PROJECT.egg-info/PKG-INFO
 LLM_MEDICAL_CHATBOT_PROJECT.egg-info/SOURCES.txt
@@ -11,13 +12,9 @@ pipeline/__init__.py
 pipeline/training_pipeline.py
 src/__init__.py
 src/custom_exception.py
-src/data_ingestion.py
-src/data_preprocessing.py
 src/logger.py
-src/model_training.py
 src/main/__init__.py
 src/main/ingestion.py
-src/main/main.py
 src/main/graph/__init__.py
 src/main/graph/graph.py
 src/main/graph/node_constants.py

@@ -15,3 +15,4 @@ bs4
 langchain_google_genai
 langgraph
 faiss-cpu
+dvc-gs
