@@ -17,19 +17,28 @@ pipeline{
             }
         }
 
-         stage('Setting up our Virtual Environment and Installing dependancies'){
-            steps{
-                script{
-                    echo 'Setting up our Virtual Environment and Installing dependancies............'
-                    sh '''
-                    python -m venv ${VENV_DIR}
-                    . ${VENV_DIR}/bin/activate
-                    pip install --upgrade pip
-                    pip install -e .
-                    '''
-                }
-            }
+        stage('Setting up our Virtual Environment and Installing dependencies') {
+    steps {
+        script {
+            echo 'Setting up our Virtual Environment and Installing dependencies............'
+            sh '''
+            if [ ! -d "${VENV_DIR}" ]; then
+                # Sanal ortam yoksa oluşturulur
+                python -m venv ${VENV_DIR}
+                . ${VENV_DIR}/bin/activate
+                pip install --upgrade pip
+                pip install -e .
+            else
+                # Sanal ortam varsa, aktive edilir ve güncellenir
+                echo "Virtual environment already exists, updating dependencies..."
+                . ${VENV_DIR}/bin/activate
+                pip install --upgrade pip
+                pip install -e .
+            fi
+            '''
         }
+    }
+}
 
 
         
