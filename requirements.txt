@@ -1,0 +1,17 @@
+pandas 
+numpy
+google-cloud-storage
+scikit-learn
+pyyaml
+imbalanced-learn
+langchain
+mlflow
+langchain_community
+pydantic
+langchain_core
+dvc
+langchain_mistralai
+bs4
+langchain_google_genai
+langgraph
+faiss-cpu
