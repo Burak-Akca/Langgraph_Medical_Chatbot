@@ -82,9 +82,9 @@ pipeline{
 
                         gcloud auth configure-docker --quiet
 
-                        docker build -t gcr.io/${GCP_PROJECT}/medical-chatbot .
+                        docker build -t us-central1-docker.pkg.dev/orbital-citizen-448816-m4/wiki-langchain-rag/medical-chatbot .
 
-                        docker push gcr.io/${GCP_PROJECT}/medical-chatbot 
+                        docker push us-central1-docker.pkg.dev/orbital-citizen-448816-m4/wiki-langchain-rag/medical-chatbot .
 
                         '''
                     }
