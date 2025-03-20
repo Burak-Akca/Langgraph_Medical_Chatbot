@@ -10,9 +10,9 @@ utils/
 static/
 pipeline/
 notebook/
-config/
 application.py
 Dockerfile
 README.md
 frontend/
+credential.json
 __pycache__
