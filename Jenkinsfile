@@ -82,10 +82,9 @@ pipeline{
 
                         gcloud auth configure-docker --quiet
 
-                        docker build -t us-central1-docker.pkg.dev/orbital-citizen-448816-m4/wiki-langchain-rag/medical-chatbot .
+                        docker build -t medical_chatbot_backend .
 
-                        docker push us-central1-docker.pkg.dev/orbital-citizen-448816-m4/wiki-langchain-rag/medical-chatbot
-
+                        gcloud builds submit  --region=us-central --tag us-central1-docker.pkg.dev/orbital-citizen-448816-m4/wiki-langchain-rag/medical_chatbot_image:tag8
                         '''
                     }
                 }
