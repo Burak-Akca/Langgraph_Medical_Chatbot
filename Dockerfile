@@ -6,7 +6,6 @@ COPY .env .env
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY credential.json /app/credential.json
 
 COPY . .
 EXPOSE 8000
