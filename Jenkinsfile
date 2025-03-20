@@ -5,7 +5,7 @@ pipeline{
         VENV_DIR = '.venv'
         GCP_PROJECT = "orbital-citizen-448816-m4"
         GCLOUD_PATH = "/var/jenkins_home/google-cloud-sdk/bin"
-        KUBECTL_AUTH_PATH = "/usr/lib/google-cloud-sdk/bin"
+        KUBECTL_AUTH_PLUGIN = "/usr/lib/google-cloud-sdk/bin"
     }
 
     stages{
@@ -62,11 +62,18 @@ pipeline{
     }
     stage('Building and Pushing Docker Image to GCR'){
             steps{
-                withCredentials([file(credentialsId: 'gcp-key' , variable : 'GOOGLE_APPLICATION_CREDENTIALS')]){
+                
+                withCredentials([
+                    
+                    
+                    file(credentialsId: 'env', variable: 'ENV_FILE_PATH'),
+
+                    file(credentialsId: 'gcp-key' , variable : 'GOOGLE_APPLICATION_CREDENTIALS')]){
                     script{
                         echo 'Building and Pushing Docker Image to GCR.............'
                         sh '''
                         export PATH=$PATH:${GCLOUD_PATH}
+                        cp $ENV_FILE_PATH .env
 
 
                         gcloud auth activate-service-account --key-file=${GOOGLE_APPLICATION_CREDENTIALS}
@@ -85,25 +92,17 @@ pipeline{
             }
         }
 
-    stage('Deploy to Google Cloud Run'){
+      stage('Deploying to Kubernetes'){
             steps{
-                withCredentials([file(credentialsId: 'gcp-key' , variable : 'GOOGLE_APPLICATION_CREDENTIALS')]){
+                withCredentials([file(credentialsId:'gcp-key' , variable: 'GOOGLE_APPLICATION_CREDENTIALS' )]){
                     script{
-                        echo 'Deploy to Google Cloud Run.............'
+                        echo 'Deploying to Kubernetes'
                         sh '''
-                        export PATH=$PATH:${GCLOUD_PATH}
-
-
+                        export PATH=$PATH:${GCLOUD_PATH}:${KUBECTL_AUTH_PLUGIN}
                         gcloud auth activate-service-account --key-file=${GOOGLE_APPLICATION_CREDENTIALS}
-
                         gcloud config set project ${GCP_PROJECT}
-
-                        gcloud run deploy ml-project \
-                            --image=gcr.io/${GCP_PROJECT}/ml-project:latest \
-                            --platform=managed \
-                            --region=us-central1 \
-                            --allow-unauthenticated
-                            
+                        gcloud container clusters get-credentials ml-app-cluster --region us-central1
+                        kubectl apply -f config/deployment.yaml
                         '''
                     }
                 }
