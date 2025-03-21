@@ -82,8 +82,6 @@ pipeline{
 
                         gcloud auth configure-docker --quiet
 
-                        docker build -t medical_chatbot_backend .
-                        docker run -d -p 8000:8000 medical-chatbot-backend
 
                         gcloud builds submit  --region=us-central1 --tag us-central1-docker.pkg.dev/orbital-citizen-448816-m4/wiki-langchain-rag/medical_chatbot_image:tag8
                         '''
@@ -101,7 +99,7 @@ pipeline{
                         export PATH=$PATH:${GCLOUD_PATH}:${KUBECTL_AUTH_PLUGIN}
                         gcloud auth activate-service-account --key-file=${GOOGLE_APPLICATION_CREDENTIALS}
                         gcloud config set project ${GCP_PROJECT}
-                        gcloud container clusters get-credentials ml-app-cluster --region us-central1
+                        gcloud container clusters get-credentials  medical-chatbot-cluster --region us-central1
                         kubectl apply -f config/deployment.yaml
                         '''
                     }
