@@ -15,9 +15,9 @@ spec:
     spec:
       containers:
       - name: medical-chatbot-app-container
-        image: gcr.io/orbital-citizen-448816-m4/medical-chatbot 
+        image:  us-central1-docker.pkg.dev/orbital-citizen-448816-m4/wiki-langchain-rag/medical_chatbot_image:tag8 
         ports:
-        - containerPort: 5000  # Replace with the port your app listens on
+        - containerPort: 8000  # Replace with the port your app listens on
 ---
 apiVersion: v1
 kind: Service
@@ -30,5 +30,5 @@ spec:
   ports:
   - protocol: TCP
     port: 80
-    targetPort: 5000
+    targetPort: 8000
 
