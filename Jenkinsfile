@@ -114,11 +114,14 @@ pipeline{
                     gcloud config set project ${GCP_PROJECT}
                     gcloud container clusters get-credentials medical-chatbot-cluster --region us-central1
                     '''
-
                     sh '''
-                    kubectl create secret generic api-keys \
-                    --from-literal=GOOGLE_API_KEY=${GOOGLE_API_KEY} \
-                    --from-literal=TAVILY_API_KEY=${TAVILY_API_KEY}
+                    if kubectl get secret api-keys > /dev/null 2>&1; then
+                        echo "Secret 'api-keys' already exists. Skipping creation."
+                    else
+                        kubectl create secret generic api-keys \
+                            --from-literal=GOOGLE_API_KEY=${GOOGLE_API_KEY} \
+                            --from-literal=TAVILY_API_KEY=${TAVILY_API_KEY}
+                    fi
                     '''
 
                     sh '''
