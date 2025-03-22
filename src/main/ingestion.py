@@ -35,18 +35,19 @@ embedding_model = GoogleGenerativeAIEmbeddings(model="models/embedding-001", goo
 
 def create_vector_database():
    print(os.getcwd())
-   loader = CSVLoader(file_path="./artifacts/medquad.csv", source_column="question", encoding="utf-8")
+   loader = CSVLoader(file_path="/artifacts/processed/FAISS_DB", source_column="question", encoding="utf-8")
    data=loader.load()
    vectorDB=FAISS.from_documents(documents=data,embedding=embedding_model)
    
-   vectorDB.save_local("./artifacts/processed/FAISS_DB")
+   vectorDB.save_local("/artifacts/processed/FAISS_DB")
 
    
 def get_retriever():
     
-   vectorDB=FAISS.load_local("./artifacts/processed/FAISS_DB",embeddings=embedding_model,allow_dangerous_deserialization=True)
+   vectorDB=FAISS.load_local("/artifacts/processed/FAISS_DB",embeddings=embedding_model,allow_dangerous_deserialization=True)
    retriever=vectorDB.as_retriever(search_kwargs={"k": 2})
    return retriever
 
 if __name__=="__main__":
-    create_vector_database()
+    rr=get_retriever()
+    print(rr.get_relevant_documents("What is the capital of Turkey?"))
