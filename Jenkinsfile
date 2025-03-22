@@ -71,6 +71,16 @@ pipeline{
                     file(credentialsId: 'gcp-key' , variable : 'GOOGLE_APPLICATION_CREDENTIALS')]){
                     script{
                         echo 'Building and Pushing Docker Image to GCR.............'
+
+
+                        sh '''
+                        if [ ! -f .env ]; then
+                        cp ${ENV_FILE_PATH} .env
+                        else
+                        echo ".env dosyası zaten mevcut, kopyalama işlemi yapılmadı."
+                        fi
+                        '''                        
+                        
                         sh '''
                         export PATH=$PATH:${GCLOUD_PATH}
                         
