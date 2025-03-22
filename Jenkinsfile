@@ -83,7 +83,7 @@ pipeline{
                         gcloud auth configure-docker --quiet
 
 
-                        gcloud builds submit --region=us-central1 --tag us-central1-docker.pkg.dev/orbital-citizen-448816-m4/wiki-langchain-rag/medical_chatbot_image:tag8 --substitutions=_ENV_FILE_PATH=${ENV_FILE_PATH}
+                        gcloud builds submit  --region=us-central1 --tag us-central1-docker.pkg.dev/orbital-citizen-448816-m4/wiki-langchain-rag/medical_chatbot_image:tag8
                         '''
                     }
                 }
