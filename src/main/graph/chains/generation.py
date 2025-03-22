@@ -11,12 +11,12 @@ import sys
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_google_genai import ChatGoogleGenerativeAI
 
-parent_directory = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
-sys.path.insert(0, parent_directory)
+
 load_dotenv()
-api_key = os.getenv("GOOGLE_API_KEY")
+api_key = os.environ.get("GOOGLE_API_KEY")
 if not api_key:
     raise ValueError("GOOGLE_API_KEY bulunamadı! Lütfen çevre değişkenlerini kontrol edin.")
+
 
 # LLM başlatma
 llm =ChatGoogleGenerativeAI(model="gemini-1.5-pro", google_api_key=api_key, temperature=0.4)
@@ -45,4 +45,4 @@ generation_chain = prompt_template | llm | StrOutputParser()
 
 # Test çağrısı
 if __name__ == "__main__":
-   pass
+   print(generation_chain.invoke({"context": "The capital of Turkey is Ankara.", "question": "What is the capital of Turkey?"}))

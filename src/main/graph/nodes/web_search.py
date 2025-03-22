@@ -4,8 +4,18 @@ from langchain.schema import Document
 from langchain_community.tools.tavily_search import TavilySearchResults
 
 from src.main.graph.state import GraphState
+import os
+from dotenv import load_dotenv
+load_dotenv()
 
-web_search_tool = TavilySearchResults(k=3)
+
+
+api_key = os.environ.get("TAVILY_API_KEY")
+if not api_key:
+    raise ValueError("GOOGLE_API_KEY bulunamadı! Lütfen çevre değişkenlerini kontrol edin.")
+
+
+web_search_tool = TavilySearchResults(k=3 ,api_key=api_key)
 
 def web_search(state: GraphState) -> Dict[str, Any]:
     print("---WEB SEARCH---")

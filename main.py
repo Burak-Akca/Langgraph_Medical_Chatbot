@@ -3,11 +3,10 @@ from pydantic import BaseModel
 from dotenv import load_dotenv
 from src.main.graph.graph import app  # Mevcut app.invoke çağrısını kullanıyoruz
 from fastapi.middleware.cors import CORSMiddleware
+import os
 
-# Ortam değişkenlerini yükle
-load_dotenv()
 
-# FastAPI başlat
+
 api = FastAPI()
 api.add_middleware(
     CORSMiddleware,

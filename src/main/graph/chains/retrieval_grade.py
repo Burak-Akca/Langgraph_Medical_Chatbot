@@ -15,11 +15,12 @@ from ingestion import get_retriever
 
 # Çevre değişkenlerini yükle
 load_dotenv()
-api_key = os.getenv("GOOGLE_API_KEY")
+
+api_key = os.environ.get("GOOGLE_API_KEY")
 if not api_key:
     raise ValueError("GOOGLE_API_KEY bulunamadı! Lütfen çevre değişkenlerini kontrol edin.")
 
-# LLM başlatma
+
 llm =ChatGoogleGenerativeAI(model="gemini-1.5-pro", google_api_key=api_key, temperature=0.4)
 
 # LLM başlatma
