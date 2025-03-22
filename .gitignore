@@ -2,8 +2,7 @@
 mlruns/
 logs/
 MLOPS_PROJECT_1.egg-info/
-artifacts/processed/
-artifacts/raw/
+
 .vscode
 .env
 utils/
