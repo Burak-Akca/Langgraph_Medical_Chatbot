@@ -1,9 +1,9 @@
 FROM python:3.11
 
 WORKDIR /app
+COPY .gitignore .gitignore
 
 COPY .env .env
-COPY .gitignore .gitignore
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
