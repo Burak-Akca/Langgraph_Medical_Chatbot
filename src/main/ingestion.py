@@ -10,12 +10,13 @@ from langchain_core.prompts import PromptTemplate
 from langchain_google_genai.embeddings import GoogleGenerativeAIEmbeddings
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_core.output_parsers import StrOutputParser
-from dotenv import load_dotenv
+from dotenv import load_dotenv,find_dotenv
 from fastapi.middleware.cors import CORSMiddleware
 from langchain_community.document_loaders.csv_loader import CSVLoader
 
 
-load_dotenv()
+path=find_dotenv()
+load_dotenv(path)
 api_key = os.getenv("GOOGLE_API_KEY")
 if not api_key:
     raise ValueError("GOOGLE_API_KEY bulunamadı! Lütfen çevre değişkenlerini kontrol edin.")
