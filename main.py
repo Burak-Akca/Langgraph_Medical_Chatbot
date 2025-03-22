@@ -28,5 +28,5 @@ async def rag_api(request: QuestionRequest):
 if __name__ == "__main__":
     
 
-    result = app.invoke({"question": "What is the capital of Turkey?"})
+    result = app.invoke({"question": "What is the  cold?"})
     print(result["generation"])

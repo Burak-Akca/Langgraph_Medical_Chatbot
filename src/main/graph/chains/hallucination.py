@@ -1,7 +1,7 @@
 import os
 from typing import Literal, Optional
 from pydantic import BaseModel, Field
-from dotenv import load_dotenv
+from dotenv import load_dotenv,find_dotenv
 from langchain_mistralai import ChatMistralAI
 from langchain_core.prompts import ChatPromptTemplate
 import importlib.util
@@ -13,11 +13,12 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 from src.main.ingestion import get_retriever
 
 # Çevre değişkenlerini yükle
-load_dotenv()
+path=find_dotenv()
+load_dotenv(path)
 
 api_key = os.environ.get("GOOGLE_API_KEY")
 if not api_key:
-    raise ValueError("GOOGLE_API_KEY bulunamadı! Lütfen çevre değişkenlerini kontrol edin.")
+    raise ValueError("GOOGLE_API_KEY bulunamadı! Lütfen çevre değişkenlerini kontrol edin.333333")
 
 
 # LLM başlatma
