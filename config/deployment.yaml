@@ -1,4 +1,3 @@
-
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -15,9 +14,21 @@ spec:
     spec:
       containers:
       - name: medical-chatbot-app-container
-        image:  us-central1-docker.pkg.dev/orbital-citizen-448816-m4/wiki-langchain-rag/medical_chatbot_image:tag8 
+        image: us-central1-docker.pkg.dev/orbital-citizen-448816-m4/wiki-langchain-rag/medical_chatbot_image:tag8
         ports:
         - containerPort: 8000  # Replace with the port your app listens on
+        env:
+        - name: GOOGLE_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: api-keys
+              key: GOOGLE_API_KEY
+        - name: TAVILY_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: api-keys
+              key: TAVILY_API_KEY
+
 ---
 apiVersion: v1
 kind: Service
@@ -31,4 +42,3 @@ spec:
   - protocol: TCP
     port: 80
     targetPort: 8000
-

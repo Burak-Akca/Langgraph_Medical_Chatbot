@@ -100,26 +100,36 @@ pipeline{
             }
         }
 
-      stage('Deploying to Kubernetes'){
-            steps{
-                withCredentials([file(credentialsId:'gcp-key' , variable: 'GOOGLE_APPLICATION_CREDENTIALS' )]){
-                    script{
-                        echo 'Deploying to Kubernetes'
-                        sh '''
-                        export PATH=$PATH:${GCLOUD_PATH}:${KUBECTL_AUTH_PLUGIN}
-                        gcloud auth activate-service-account --key-file=${GOOGLE_APPLICATION_CREDENTIALS}
-                        gcloud config set project ${GCP_PROJECT}
-                        gcloud container clusters get-credentials  medical-chatbot-cluster --region us-central1
-                        kubectl apply -f config/deployment.yaml
-                        '''
-                    }
+     stage('Deploying to Kubernetes') {
+    steps {
+        withCredentials([file(credentialsId: 'gcp-key', variable: 'GOOGLE_APPLICATION_CREDENTIALS')]) {
+            withCredentials([string(credentialsId: 'GOOGLE_API_KEY', variable: 'GOOGLE_API_KEY'),
+                             string(credentialsId: 'TAVILY_API_KEY', variable: 'TAVILY_API_KEY')]) {
+                script {
+                    echo 'Deploying to Kubernetes'
+                    
+                    sh '''
+                    export PATH=$PATH:${GCLOUD_PATH}:${KUBECTL_AUTH_PLUGIN}
+                    gcloud auth activate-service-account --key-file=${GOOGLE_APPLICATION_CREDENTIALS}
+                    gcloud config set project ${GCP_PROJECT}
+                    gcloud container clusters get-credentials medical-chatbot-cluster --region us-central1
+                    '''
+
+                    sh '''
+                    kubectl create secret generic api-keys \
+                    --from-literal=GOOGLE_API_KEY=${GOOGLE_API_KEY} \
+                    --from-literal=TAVILY_API_KEY=${TAVILY_API_KEY}
+                    '''
+
+                    sh '''
+                    kubectl apply -f config/deployment.yaml
+                    '''
                 }
             }
         }
-    
-    
-    
-    
+    }
+}
+
     
     
     
