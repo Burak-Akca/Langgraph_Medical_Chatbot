@@ -19,11 +19,11 @@ spec:
         - containerPort: 8000  # Replace with the port your app listens on
         resources:
           requests:
-            cpu: "1000m"       # 1 vCPU
-            memory: "4Gi"      # 4 GB RAM
+            cpu: "2000m"       # 1 vCPU
+            memory: "8Gi"      # 4 GB RAM
           limits:
-            cpu: "1000m"       # 1 vCPU
-            memory: "4Gi" 
+            cpu: "2000m"       # 1 vCPU
+            memory: "8Gi" 
         
 
 
