@@ -100,7 +100,7 @@ pipeline{
             }
         }
 
-     stage('Deploying to Kubernetes') {
+   /*  stage('Deploying to Kubernetes') {
     steps {
         withCredentials([file(credentialsId: 'gcp-key', variable: 'GOOGLE_APPLICATION_CREDENTIALS')]) {
             withCredentials([string(credentialsId: 'GOOGLE_API_KEY', variable: 'GOOGLE_API_KEY'),
@@ -132,8 +132,34 @@ pipeline{
         }
     }
 }
+*/
 
+stage('Deploying to Cloud Run') { 
+
+
+ steps {
+        withCredentials([file(credentialsId: 'gcp-key', variable: 'GOOGLE_APPLICATION_CREDENTIALS')]) {
+            
+                script {
+                    echo 'Deploying to Cloud Run'
+                    sh '''
+
+     gcloud run  deploy --image=us-central1-docker.pkg.dev/orbital-citizen-448816-m4/wiki-langchain-rag/medical_chatbot_image:tag8 --region=us-central1 --platform=managed --allow-unauthenticated --port=8000 medical-chatbot-backend 
+
+
+
+                    '''
+                 
+                   
+                    
+                }
+            }
+        }
+    }
+
+
+} 
     
     
     
-    }}
+    }
