@@ -2,3 +2,4 @@ frontend/
 README.md
 utils/
 notebook/
+.env
