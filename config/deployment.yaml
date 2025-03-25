@@ -17,13 +17,7 @@ spec:
         image: us-central1-docker.pkg.dev/orbital-citizen-448816-m4/wiki-langchain-rag/medical_chatbot_image:tag8
         ports:
         - containerPort: 8000  # Replace with the port your app listens on
-        resources:
-          requests:
-            cpu: "2000m"       # 1 vCPU
-            memory: "8Gi"      # 4 GB RAM
-          limits:
-            cpu: "2000m"       # 1 vCPU
-            memory: "8Gi" 
+     
         
 
 
