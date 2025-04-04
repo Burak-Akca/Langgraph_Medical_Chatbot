@@ -52,3 +52,6 @@ global.json
 properties/
 tempkey.jwk
 updateUI.ps1
+appsettings.json
+CustomPasswordValidator.cs
+TokenResponse.cs

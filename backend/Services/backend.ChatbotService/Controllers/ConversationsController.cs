@@ -1,10 +1,13 @@
 ﻿using backend.ChatbotService.Dtos.Conversation;
 using backend.ChatbotService.Services.ConversationServices;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace backend.ChatbotService.Controllers
 {
+    [Authorize(Policy = "ConversationFullAccess")]
+
     [Route("api/[controller]")]
     [ApiController]
     public class ConversationsController : ControllerBase

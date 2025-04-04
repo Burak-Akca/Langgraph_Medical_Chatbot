@@ -17,10 +17,12 @@ namespace backend.IdentityServer.Controllers
     public class RegisterController : ControllerBase
     {
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
 
-        public RegisterController(UserManager<ApplicationUser> userManager)
+        public RegisterController(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
         {
             _userManager = userManager;
+            _roleManager = roleManager;
         }
 
         [HttpPost]
@@ -37,6 +39,16 @@ namespace backend.IdentityServer.Controllers
             var result = await _userManager.CreateAsync(user, userRegisterDto1.Password);
             if (result.Succeeded)
             {
+
+                if (!await _roleManager.RoleExistsAsync("SympthonAIVisitor"))
+                {
+                    var role = new IdentityRole("SympthonAIVisitor");
+                    await _roleManager.CreateAsync(role);
+                }
+                await _userManager.AddToRoleAsync(user, "SympthonAIVisitor");
+
+
+
                 return Ok("User başarıyla eklendi");
             }
             return BadRequest(result.Errors);

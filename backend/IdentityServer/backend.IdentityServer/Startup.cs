@@ -13,6 +13,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Mvc.ViewComponents;
+using IdentityServer4.Validation;
 
 namespace backend.IdentityServer
 {
@@ -37,12 +38,13 @@ namespace backend.IdentityServer
                 {
                     builder.WithOrigins("http://localhost:3000") // frontend adresini buraya ekleyin
                            .AllowAnyHeader()
-                           .AllowAnyMethod();
+                           .AllowAnyMethod()
+                           .AllowCredentials();
                 });
             });
             services.AddLocalApiAuthentication();
             services.AddControllersWithViews();
-
+            //services.AddTransient<IResourceOwnerPasswordValidator, CustomPasswordValidator>(); 
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 

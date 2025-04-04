@@ -1,10 +1,12 @@
 ﻿using backend.ChatbotService.Dtos.ChatbotResponse;
 using backend.ChatbotService.Services.ChatbotResponseServices;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace backend.ChatbotService.Controllers
 {
+    [Authorize(Policy = "ChatbotReadAccess")]
     [Route("api/[controller]")]
     [ApiController]
     public class ChatbotResponsesController : ControllerBase
@@ -15,6 +17,10 @@ namespace backend.ChatbotService.Controllers
         {
             _chatbotResponseService = chatbotResponseService;
         }
+
+
+
+
 
         [HttpGet]
 

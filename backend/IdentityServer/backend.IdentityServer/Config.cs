@@ -18,6 +18,10 @@ namespace backend.IdentityServer
                 new ApiResource("ResourceChatbot")
                 {
                     Scopes = { "ChatbotFullPermission", "ChatbotReadPermission" }
+                }, 
+                new ApiResource("ResourceConversation") 
+                {
+                    Scopes = { "ConversationFullPermission", "ConversationReadPermission" }
                 },
                 new ApiResource(IdentityServerConstants.LocalApi.ScopeName)
             };
@@ -35,6 +39,9 @@ namespace backend.IdentityServer
             {
                 new ApiScope("ChatbotFullPermission","Full permisson with ChatbotFullPermission"),
                 new ApiScope("ChatbotReadPermission","Read permisson with ChatbotReadPermission"),
+                new ApiScope("ConversationFullPermission", "Full permission with ConversationFullPermission"),
+                new ApiScope("ConversationReadPermission", "Read permission with ConversationReadPermission"),
+
                 new ApiScope(IdentityServerConstants.LocalApi.ScopeName)
 
             };
@@ -47,18 +54,18 @@ namespace backend.IdentityServer
                 ClientName = "Sympthon AI Visitor User",
                 AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
                 ClientSecrets = { new Secret("ChatbotSecret".Sha256()) },
-                AllowedScopes = { "ChatbotReadPermission" }
+                AllowedScopes = { "ChatbotReadPermission", "ConversationReadPermission" }
                 ,
-               
+
             }
             ,
             new Client
             {
                 ClientId = "SympthonAIManagerId",
                 ClientName = "Sympthon AI Manager User",
-                AllowedGrantTypes = GrantTypes.ClientCredentials,
+                AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
                 ClientSecrets = { new Secret("ChatbotSecret".Sha256()) },
-                AllowedScopes = { "ChatbotFullPermission" }
+                AllowedScopes = { "ChatbotFullPermission", "ConversationReadPermission" }
 
 
 
@@ -68,9 +75,10 @@ namespace backend.IdentityServer
             {
                 ClientId = "SympthonAIAdminId",
                 ClientName = "Sympthon AI Admin User",
-                AllowedGrantTypes = GrantTypes.ClientCredentials,
+                AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
                 ClientSecrets = { new Secret("ChatbotSecret".Sha256()) },
                 AllowedScopes = { "ChatbotFullPermission",
+                "ConversationFullPermission",
                 IdentityServerConstants.LocalApi.ScopeName,
                 IdentityServerConstants.StandardScopes.Email,
                 IdentityServerConstants.StandardScopes.OpenId,

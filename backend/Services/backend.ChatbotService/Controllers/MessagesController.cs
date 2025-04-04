@@ -1,10 +1,13 @@
 ﻿using backend.ChatbotService.Dtos.Message;
 using backend.ChatbotService.Services.MessageServices;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace backend.ChatbotService.Controllers
 {
+    [Authorize]
+
     [Route("api/[controller]")]
     [ApiController]
     public class MessagesController : ControllerBase
