@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace backend.ChatbotService.Controllers
 {
-    [Authorize]
+    [Authorize(Policy = "ChatbotReadAccess")]
 
     [Route("api/[controller]")]
     [ApiController]
@@ -36,6 +36,17 @@ namespace backend.ChatbotService.Controllers
             }
             return Ok(message);
         }
+        [HttpGet("user/{userId}")]
+        public async Task<ActionResult> GetConversationsByUserIdAsync(string userId)
+        {
+                var messages = await _messageService.GetConversationsByUserIdAsync(userId);
+            if (messages == null || !messages.Any())
+            {
+                return NotFound(new { Message = "No message found for this user." });
+            }
+            return Ok(messages);
+        }
+
 
         [HttpPost]
         public async Task<ActionResult> CreateMessageAsync(CreateMessageDto createMessageDto)

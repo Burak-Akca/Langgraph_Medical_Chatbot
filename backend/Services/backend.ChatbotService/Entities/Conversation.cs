@@ -15,11 +15,14 @@ namespace backend.ChatbotService.Entities
         [BsonIgnore]
         public User User { get; set; }
 
+        [BsonElement("title")]
+        public string   Title { get; set; } 
+
+
         [BsonElement("started_at")]
         public DateTime StartedAt { get; set; }
 
-        [BsonElement("ended_at")]
-        public DateTime? EndedAt { get; set; }
+
 
 
         [BsonElement("status")]

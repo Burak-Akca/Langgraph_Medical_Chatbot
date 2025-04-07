@@ -7,10 +7,11 @@
 
         public string ConversationId { get; set; }
 
-        public string UserMessage { get; set; }
 
-        public string ChatbotResponse { get; set; }
+        public string MessageText { get; set; }
 
-        public DateTime SentAt { get; set; }   
+        public string sender { get; set; }
+
+        public DateTime timestamp { get; set; }
     }
 }

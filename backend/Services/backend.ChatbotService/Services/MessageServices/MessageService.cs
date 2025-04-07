@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using backend.ChatbotService.Dtos.Conversation;
 using backend.ChatbotService.Dtos.Message;
 using backend.ChatbotService.Entities;
 using backend.ChatbotService.Settings;
@@ -46,6 +47,11 @@ namespace backend.ChatbotService.Services.MessageServices
         {
             var values = _mapper.Map<Message>(updateMessageDto);
             await _messageCollection.FindOneAndReplaceAsync(x => x.Id == updateMessageDto.Id, values);
+        }
+        public async Task<List<ResultMessageDto>> GetConversationsByUserIdAsync(string ConversationId)
+        {
+            var value = await _messageCollection.Find(x => x.ConversationId == ConversationId).ToListAsync();
+            return _mapper.Map<List<ResultMessageDto>>(value);
         }
     }
 }

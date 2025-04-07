@@ -6,10 +6,14 @@
 
         public string UserId { get; set; }
 
+
+
+        public string Title { get; set; }
+
+
         public DateTime StartedAt { get; set; }
 
 
-        public DateTime? EndedAt { get; set; }
 
 
         public String Status { get; set; }

@@ -15,14 +15,14 @@ namespace backend.ChatbotService.Entities
         [BsonIgnore]
         public Conversation Conversation { get; set; }
 
-        [BsonElement("user_message")]
-        public string UserMessage { get; set; }
+        [BsonElement("message_text")]
+        public string MessageText { get; set; }
 
-        [BsonElement("chatbot_response")]
-        public string ChatbotResponse { get; set; }
+        [BsonElement("sender")]
+        public string sender { get; set; }
 
-        [BsonElement("sent_at")]
-        public DateTime SentAt { get; set; }
+        [BsonElement("timestamp")]
+        public DateTime timestamp { get; set; }
     }
 }
 

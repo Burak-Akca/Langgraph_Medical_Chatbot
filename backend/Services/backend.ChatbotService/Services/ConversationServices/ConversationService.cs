@@ -47,5 +47,10 @@ namespace backend.ChatbotService.Services.ConversationServices
             var values = _mapper.Map<Conversation>(updateConversationDto);
             await _conversationCollection.FindOneAndReplaceAsync(x => x.Id == updateConversationDto.Id, values);
         }
+        public async Task<List<ResultConversationDto>> GetConversationsByUserIdAsync(string userId)
+        {
+            var value = await _conversationCollection.Find(x => x.UserId == userId).ToListAsync();
+            return _mapper.Map<List<ResultConversationDto>>(value);
+        }
     }
 }

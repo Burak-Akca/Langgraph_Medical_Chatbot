@@ -9,6 +9,8 @@ namespace backend.ChatbotService.Services.ConversationServices
         Task UpdateConversationAsync(UpdateConversationDto updateConversationDto);
         Task DeleteConversationAsync(string conversationId);
         Task<GetByIdConversationDto> GetByIdConversationAsync(string conversationId);
+        Task<List<ResultConversationDto>> GetConversationsByUserIdAsync(string userId); // Yeni metod
+
     }
 }
 

@@ -1,12 +1,14 @@
 ﻿using backend.ChatbotService.Dtos.Conversation;
+using backend.ChatbotService.Entities;
 using backend.ChatbotService.Services.ConversationServices;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using MongoDB.Driver;
 
 namespace backend.ChatbotService.Controllers
 {
-    [Authorize(Policy = "ConversationFullAccess")]
+    //[Authorize(Policy = "ChatbotReadAccess")]
 
     [Route("api/[controller]")]
     [ApiController]
@@ -36,6 +38,21 @@ namespace backend.ChatbotService.Controllers
             }
             return Ok(conversation);
         }
+
+
+        [HttpGet("user/{userId}")]
+        public async Task<ActionResult> GetConversationsByUserIdAsync(string userId)
+        {
+            var conversations = await _conversationService.GetConversationsByUserIdAsync(userId);
+            if (conversations == null || !conversations.Any())
+            {
+                return NotFound(new { Message = "No conversations found for this user." });
+            }
+                return Ok(conversations);
+        }
+
+
+
 
         [HttpPost]
         public async Task<ActionResult> CreateConversationAsync(CreateConversationDto createConversationDto)

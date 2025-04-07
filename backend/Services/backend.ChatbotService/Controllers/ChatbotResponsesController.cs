@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace backend.ChatbotService.Controllers
 {
-    [Authorize(Policy = "ChatbotReadAccess")]
     [Route("api/[controller]")]
     [ApiController]
     public class ChatbotResponsesController : ControllerBase
