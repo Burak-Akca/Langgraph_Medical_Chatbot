@@ -19,10 +19,12 @@ namespace backend.ChatbotService.Services.ConversationServices
             _mapper = mapper;
         }
 
-        public async Task CreateConversationAsync(CreateConversationDto createConversationDto)
+        public async Task<Conversation> CreateConversationAsync(CreateConversationDto createConversationDto)
         {
             var value = _mapper.Map<Conversation>(createConversationDto);
             await _conversationCollection.InsertOneAsync(value);
+
+            return value;
         }
 
         public async Task DeleteConversationAsync(string conversationId)

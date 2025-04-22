@@ -55,12 +55,11 @@ namespace backend.ChatbotService.Controllers
 
 
         [HttpPost]
-        public async Task<ActionResult> CreateConversationAsync(CreateConversationDto createConversationDto)
+        public async Task<ActionResult<CreateConversationDto>> CreateConversationAsync(CreateConversationDto createConversationDto)
         {
-            await _conversationService.CreateConversationAsync(createConversationDto);
-            return Ok("Conversation başarıyla eklendi");
+            var createdConversation = await _conversationService.CreateConversationAsync(createConversationDto);
+            return Ok(createdConversation); 
         }
-
         [HttpDelete]
         public async Task<ActionResult> DeleteConversationAsync(string id)
         {
@@ -74,7 +73,7 @@ namespace backend.ChatbotService.Controllers
 
             await _conversationService.UpdateConversationAsync(updateConversationDto);
             return Ok("Conversation başarıyla güncellendi");
-        }
+        }       
     }
 }
 
