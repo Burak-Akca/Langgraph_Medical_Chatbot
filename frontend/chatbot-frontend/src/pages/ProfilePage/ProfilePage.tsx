@@ -1,0 +1,636 @@
+import React, { useState, useRef, ChangeEvent } from "react";
+import {
+  Box,
+  Container,
+  Typography,
+  Paper,
+  Avatar,
+  Grid,
+  TextField,
+  Button,
+  CircularProgress,
+  Snackbar,
+  Alert,
+  FormControl,
+  InputLabel,
+  OutlinedInput,
+  InputAdornment,
+  IconButton,
+  FormHelperText,
+  Badge
+} from "@mui/material";
+import { 
+  Person as PersonIcon, 
+  Edit as EditIcon, 
+  Save as SaveIcon,
+  Visibility as VisibilityIcon,
+  VisibilityOff as VisibilityOffIcon,
+  AddPhotoAlternate as AddPhotoIcon,
+  Delete as DeleteIcon
+} from "@mui/icons-material";
+import NavigationBar from "../../components/NavigationBar";
+
+const ProfilePage: React.FC = () => {
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  
+  const [user, setUser] = useState({
+    name: "John Doe",
+    email: "john.doe@example.com",
+    role: "User",
+    joinDate: "January 1, 2023",
+    profileImage: ""
+  });
+  
+  const [loading, setLoading] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedUser, setEditedUser] = useState({ ...user });
+  
+  // Image upload states
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [imageError, setImageError] = useState("");
+
+  // Password states
+  const [passwords, setPasswords] = useState({
+    current: "",
+    new: "",
+    confirm: ""
+  });
+  const [showPasswords, setShowPasswords] = useState({
+    current: false,
+    new: false,
+    confirm: false
+  });
+  const [passwordErrors, setPasswordErrors] = useState({
+    current: "",
+    new: "",
+    confirm: ""
+  });
+
+  const [notification, setNotification] = useState<{ open: boolean, message: string, severity: "success" | "error" }>({ 
+    open: false, 
+    message: "", 
+    severity: "success" 
+  });
+
+  const handleEditToggle = () => {
+    if (isEditing) {
+      // Cancel editing
+      setEditedUser({ ...user });
+      // Reset password fields
+      setPasswords({
+        current: "",
+        new: "",
+        confirm: ""
+      });
+      setPasswordErrors({
+        current: "",
+        new: "",
+        confirm: ""
+      });
+      // Reset image upload
+      setSelectedImage(null);
+      setImagePreview(null);
+      setImageError("");
+    }
+    setIsEditing(!isEditing);
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setEditedUser(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setPasswords(prev => ({
+      ...prev,
+      [name]: value
+    }));
+
+    // Clear errors when typing
+    if (passwordErrors[name as keyof typeof passwordErrors]) {
+      setPasswordErrors(prev => ({
+        ...prev,
+        [name]: ""
+      }));
+    }
+
+    // Validate confirm password when typing
+    if (name === "confirm" && value !== passwords.new) {
+      setPasswordErrors(prev => ({
+        ...prev,
+        confirm: "Passwords don't match"
+      }));
+    } else if (name === "confirm") {
+      setPasswordErrors(prev => ({
+        ...prev,
+        confirm: ""
+      }));
+    }
+
+    // Validate new password when typing
+    if (name === "new") {
+      if (value.length > 0 && value.length < 8) {
+        setPasswordErrors(prev => ({
+          ...prev,
+          new: "Password must be at least 8 characters"
+        }));
+      } else {
+        setPasswordErrors(prev => ({
+          ...prev,
+          new: ""
+        }));
+      }
+
+      // Update confirm error state if confirm already has a value
+      if (passwords.confirm && value !== passwords.confirm) {
+        setPasswordErrors(prev => ({
+          ...prev,
+          confirm: "Passwords don't match"
+        }));
+      } else if (passwords.confirm) {
+        setPasswordErrors(prev => ({
+          ...prev,
+          confirm: ""
+        }));
+      }
+    }
+  };
+
+  const handleClickShowPassword = (field: keyof typeof showPasswords) => {
+    setShowPasswords({
+      ...showPasswords,
+      [field]: !showPasswords[field]
+    });
+  };
+
+  const validatePasswords = (): boolean => {
+    let isValid = true;
+    const errors = {
+      current: "",
+      new: "",
+      confirm: ""
+    };
+
+    // Only validate if user is trying to change password
+    if (passwords.new || passwords.confirm || passwords.current) {
+      // Current password is required
+      if (!passwords.current) {
+        errors.current = "Current password is required";
+        isValid = false;
+      }
+
+      // New password must be at least 8 characters
+      if (!passwords.new) {
+        errors.new = "New password is required";
+        isValid = false;
+      } else if (passwords.new.length < 8) {
+        errors.new = "Password must be at least 8 characters";
+        isValid = false;
+      }
+
+      // Confirm password must match new password
+      if (!passwords.confirm) {
+        errors.confirm = "Please confirm your password";
+        isValid = false;
+      } else if (passwords.confirm !== passwords.new) {
+        errors.confirm = "Passwords don't match";
+        isValid = false;
+      }
+    }
+
+    setPasswordErrors(errors);
+    return isValid;
+  };
+
+  const handleImageSelect = (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) {
+      return;
+    }
+
+    // Validate file type
+    const validTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+    if (!validTypes.includes(file.type)) {
+      setImageError("Please select a valid image file (JPEG, PNG, GIF, WEBP)");
+      return;
+    }
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      setImageError("Image size should be less than 5MB");
+      return;
+    }
+
+    setImageError("");
+    setSelectedImage(file);
+
+    // Create preview
+    const reader = new FileReader();
+    reader.onload = () => {
+      setImagePreview(reader.result as string);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleImageUploadClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleRemoveImage = () => {
+    setSelectedImage(null);
+    setImagePreview(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
+  const handleSave = async () => {
+    // Validate passwords if user is trying to change them
+    if ((passwords.new || passwords.confirm || passwords.current) && !validatePasswords()) {
+      return;
+    }
+
+    setLoading(true);
+    try {
+      // Mock API call - in real app would update profile and upload image
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Update local state
+      setUser({
+        ...editedUser,
+        // In a real app, the image URL would come from the server after upload
+        profileImage: imagePreview || user.profileImage
+      });
+      setIsEditing(false);
+      
+      // Reset password fields
+      setPasswords({
+        current: "",
+        new: "",
+        confirm: ""
+      });
+
+      // Reset image upload state but keep the image preview
+      setSelectedImage(null);
+      
+      // Show success notification
+      let message = "Profile updated successfully!";
+      if (passwords.new && selectedImage) {
+        message = "Profile, password, and profile photo updated successfully!";
+      } else if (passwords.new) {
+        message = "Profile and password updated successfully!";
+      } else if (selectedImage) {
+        message = "Profile and profile photo updated successfully!";
+      }
+      
+      setNotification({
+        open: true,
+        message,
+        severity: "success"
+      });
+    } catch (err) {
+      // Show error notification
+      setNotification({
+        open: true,
+        message: "Failed to update profile",
+        severity: "error"
+      });
+      console.error("Error updating profile:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCloseNotification = () => {
+    setNotification(prev => ({ ...prev, open: false }));
+  };
+
+  // Create a complementary gradient for the profile header
+  const profileHeaderGradient = "linear-gradient(135deg, #6a11cb 0%, #2575fc 100%)";
+
+  // Determine the image to display in avatar
+  const avatarImage = imagePreview || user.profileImage;
+
+  return (
+    <>
+      <NavigationBar />
+      <Container maxWidth="md" sx={{ mt: 5, mb: 5 }}>
+        <Paper
+          elevation={3}
+          sx={{
+            borderRadius: 2,
+            overflow: "hidden"
+          }}
+        >
+          {/* Profile Header */}
+          <Box
+            sx={{
+              background: profileHeaderGradient,
+              color: "white",
+              py: 2,
+              px: 4,
+              display: "flex",
+              alignItems: "center",
+              gap: 3
+            }}
+          >
+            <Badge
+              overlap="circular"
+              anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+              badgeContent={
+                isEditing ? (
+                  <IconButton
+                    size="small"
+                    sx={{
+                      bgcolor: '#2575fc',
+                      color: 'white',
+                      '&:hover': { bgcolor: '#1a65e6' }
+                    }}
+                    onClick={handleImageUploadClick}
+                  >
+                    <AddPhotoIcon />
+                  </IconButton>
+                ) : null
+              }
+            >
+              <Avatar 
+                src={avatarImage}
+                sx={{ 
+                  width: 80, 
+                  height: 80,
+                  border: "3px solid rgba(255,255,255,0.8)",
+                  boxShadow: "0 2px 8px rgba(0,0,0,0.2)"
+                }}
+              >
+                {!avatarImage && <PersonIcon sx={{ fontSize: 50 }} />}
+              </Avatar>
+            </Badge>
+            <Box>
+              <Typography variant="h5" fontWeight="bold" sx={{ mb: 0.5 }}>
+                {user.name}
+              </Typography>
+              <Typography variant="body1">
+                {user.role}
+              </Typography>
+            </Box>
+          </Box>
+
+          {/* Profile Content */}
+          <Box sx={{ p: 4 }}>
+            <Box sx={{ display: "flex", justifyContent: "flex-end", mb: 3 }}>
+              <Button
+                variant={isEditing ? "outlined" : "contained"}
+                color={isEditing ? "error" : "primary"}
+                onClick={handleEditToggle}
+                disabled={loading}
+                startIcon={isEditing ? null : <EditIcon />}
+              >
+                {isEditing ? "Cancel" : "Edit Profile"}
+              </Button>
+            </Box>
+
+            {/* Hidden file input */}
+            <input
+              type="file"
+              ref={fileInputRef}
+              style={{ display: 'none' }}
+              accept="image/jpeg,image/png,image/gif,image/webp"
+              onChange={handleImageSelect}
+            />
+
+            {isEditing && imagePreview && (
+              <Box sx={{ mb: 3, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                <Typography variant="subtitle1" fontWeight="bold" gutterBottom color="primary.main">
+                  Selected Profile Photo
+                </Typography>
+                <Box sx={{ position: 'relative', mb: 1 }}>
+                  <Avatar 
+                    src={imagePreview} 
+                    sx={{ width: 100, height: 100 }}
+                  />
+                  <IconButton
+                    size="small"
+                    sx={{
+                      position: 'absolute',
+                      top: -8,
+                      right: -8,
+                      bgcolor: 'error.main',
+                      color: 'white',
+                      '&:hover': { bgcolor: 'error.dark' }
+                    }}
+                    onClick={handleRemoveImage}
+                  >
+                    <DeleteIcon fontSize="small" />
+                  </IconButton>
+                </Box>
+                {imageError && (
+                  <Typography color="error" variant="caption">
+                    {imageError}
+                  </Typography>
+                )}
+              </Box>
+            )}
+
+            <Grid container spacing={3}>
+              <Grid item xs={12} sm={6}>
+                <Typography variant="subtitle1" fontWeight="bold" gutterBottom color="primary.main">
+                  Full Name
+                </Typography>
+                {isEditing ? (
+                  <TextField
+                    fullWidth
+                    name="name"
+                    value={editedUser.name}
+                    onChange={handleChange}
+                    variant="outlined"
+                    size="small"
+                  />
+                ) : (
+                  <Typography variant="body1">{user.name}</Typography>
+                )}
+              </Grid>
+              
+              <Grid item xs={12} sm={6}>
+                <Typography variant="subtitle1" fontWeight="bold" gutterBottom color="primary.main">
+                  Email Address
+                </Typography>
+                {isEditing ? (
+                  <TextField
+                    fullWidth
+                    name="email"
+                    value={editedUser.email}
+                    onChange={handleChange}
+                    variant="outlined"
+                    size="small"
+                    type="email"
+                  />
+                ) : (
+                  <Typography variant="body1">{user.email}</Typography>
+                )}
+              </Grid>
+              
+              <Grid item xs={12} sm={6}>
+                <Typography variant="subtitle1" fontWeight="bold" gutterBottom color="primary.main">
+                  Role
+                </Typography>
+                <Typography variant="body1">{user.role}</Typography>
+              </Grid>
+              
+              <Grid item xs={12} sm={6}>
+                <Typography variant="subtitle1" fontWeight="bold" gutterBottom color="primary.main">
+                  Joined
+                </Typography>
+                <Typography variant="body1">{user.joinDate}</Typography>
+              </Grid>
+
+              {isEditing && (
+                <>
+                  <Grid item xs={12}>
+                    <Typography variant="subtitle1" fontWeight="bold" gutterBottom color="primary.main" sx={{ mt: 2 }}>
+                      Change Password
+                    </Typography>
+                  </Grid>
+                  
+                  <Grid item xs={12} sm={6}>
+                    <FormControl 
+                      fullWidth 
+                      variant="outlined" 
+                      size="small"
+                      error={!!passwordErrors.current}
+                    >
+                      <InputLabel htmlFor="current-password">Current Password</InputLabel>
+                      <OutlinedInput
+                        id="current-password"
+                        name="current"
+                        type={showPasswords.current ? 'text' : 'password'}
+                        value={passwords.current}
+                        onChange={handlePasswordChange}
+                        endAdornment={
+                          <InputAdornment position="end">
+                            <IconButton
+                              aria-label="toggle password visibility"
+                              onClick={() => handleClickShowPassword('current')}
+                              edge="end"
+                            >
+                              {showPasswords.current ? <VisibilityOffIcon /> : <VisibilityIcon />}
+                            </IconButton>
+                          </InputAdornment>
+                        }
+                        label="Current Password"
+                      />
+                      {passwordErrors.current && (
+                        <FormHelperText error>{passwordErrors.current}</FormHelperText>
+                      )}
+                    </FormControl>
+                  </Grid>
+
+                  <Grid item xs={12} sm={6}>
+                    <FormControl 
+                      fullWidth 
+                      variant="outlined" 
+                      size="small"
+                      error={!!passwordErrors.new}
+                    >
+                      <InputLabel htmlFor="new-password">New Password</InputLabel>
+                      <OutlinedInput
+                        id="new-password"
+                        name="new"
+                        type={showPasswords.new ? 'text' : 'password'}
+                        value={passwords.new}
+                        onChange={handlePasswordChange}
+                        endAdornment={
+                          <InputAdornment position="end">
+                            <IconButton
+                              aria-label="toggle password visibility"
+                              onClick={() => handleClickShowPassword('new')}
+                              edge="end"
+                            >
+                              {showPasswords.new ? <VisibilityOffIcon /> : <VisibilityIcon />}
+                            </IconButton>
+                          </InputAdornment>
+                        }
+                        label="New Password"
+                      />
+                      {passwordErrors.new && (
+                        <FormHelperText error>{passwordErrors.new}</FormHelperText>
+                      )}
+                    </FormControl>
+                  </Grid>
+
+                  <Grid item xs={12} sm={6}>
+                    <FormControl 
+                      fullWidth 
+                      variant="outlined" 
+                      size="small"
+                      error={!!passwordErrors.confirm}
+                    >
+                      <InputLabel htmlFor="confirm-password">Confirm New Password</InputLabel>
+                      <OutlinedInput
+                        id="confirm-password"
+                        name="confirm"
+                        type={showPasswords.confirm ? 'text' : 'password'}
+                        value={passwords.confirm}
+                        onChange={handlePasswordChange}
+                        endAdornment={
+                          <InputAdornment position="end">
+                            <IconButton
+                              aria-label="toggle password visibility"
+                              onClick={() => handleClickShowPassword('confirm')}
+                              edge="end"
+                            >
+                              {showPasswords.confirm ? <VisibilityOffIcon /> : <VisibilityIcon />}
+                            </IconButton>
+                          </InputAdornment>
+                        }
+                        label="Confirm New Password"
+                      />
+                      {passwordErrors.confirm && (
+                        <FormHelperText error>{passwordErrors.confirm}</FormHelperText>
+                      )}
+                    </FormControl>
+                  </Grid>
+                </>
+              )}
+            </Grid>
+
+            {isEditing && (
+              <Box sx={{ mt: 4, display: "flex", justifyContent: "center" }}>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={handleSave}
+                  disabled={loading}
+                  startIcon={loading ? undefined : <SaveIcon />}
+                >
+                  {loading ? <CircularProgress size={24} /> : "Save Changes"}
+                </Button>
+              </Box>
+            )}
+          </Box>
+        </Paper>
+      </Container>
+
+      <Snackbar 
+        open={notification.open} 
+        autoHideDuration={4000} 
+        onClose={handleCloseNotification}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert 
+          onClose={handleCloseNotification} 
+          severity={notification.severity} 
+          sx={{ width: '100%' }}
+        >
+          {notification.message}
+        </Alert>
+      </Snackbar>
+    </>
+  );
+};
+
+export default ProfilePage; 
