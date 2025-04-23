@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   AppBar,
   Toolbar,
@@ -10,7 +10,6 @@ import {
   useTheme,
   useMediaQuery,
   alpha,
-  Divider,
 } from "@mui/material";
 import {
   Menu as MenuIcon,
@@ -21,21 +20,60 @@ import { Link } from "react-router-dom";
 import UserMenu from "./UserMenu";
 import MobileDrawer from "./MobileDrawer";
 import LogoutConfirmation from "./LogoutConfirmation";
+import axios from "axios";
+import getUserIdFromToken from "./getUserIdFromToken";
 
-interface NavigationBarProps {
-  // Add any props if needed
-}
-
-const NavigationBar: React.FC<NavigationBarProps> = () => {
+const NavigationBar: React.FC = () => {
   // This would typically come from your auth context or state management
   const isAuthenticated = true; // For demonstration purposes
 
   const [menuAnchorEl, setMenuAnchorEl] = useState<null | HTMLElement>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);
+  const [userImage, setUserImage] = useState<string | null>(null);
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+  const userId = getUserIdFromToken();
+
+  // Fetch user profile image on component mount
+  useEffect(() => {
+    if (userId) {
+      fetchUserImage();
+    }
+
+    // Listen for image update events from other components
+    const handleImageUpdate = (event: CustomEvent<{ imageUrl: string }>) => {
+      setUserImage(event.detail.imageUrl);
+    };
+
+    window.addEventListener('userImageUpdated', handleImageUpdate as EventListener);
+
+    return () => {
+      window.removeEventListener('userImageUpdated', handleImageUpdate as EventListener);
+    };
+  }, [userId]);
+
+  const fetchUserImage = async () => {
+    if (!userId) return;
+    
+    try {
+      const token = sessionStorage.getItem("access_token");
+      const response = await axios.get(`https://localhost:7059/api/UserImage/${userId}`, {
+        headers: {
+          ...(token && { Authorization: `Bearer ${token}` })
+        },
+        responseType: 'blob'
+      });
+      
+      // Create an object URL from the image blob
+      const imageUrl = URL.createObjectURL(response.data);
+      setUserImage(imageUrl);
+    } catch (error) {
+      console.error('Error fetching user image:', error);
+      // Silently fail - do not show error notification to user
+    }
+  };
 
   const handleUserMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setMenuAnchorEl(event.currentTarget);
@@ -249,7 +287,7 @@ const NavigationBar: React.FC<NavigationBarProps> = () => {
               <>
                 <Button
                   component={Link}
-                  to="/login"
+                  to="/signin"
                   startIcon={<LoginIcon />}
                   sx={{
                     color: "white",
@@ -260,11 +298,11 @@ const NavigationBar: React.FC<NavigationBarProps> = () => {
                     },
                   }}
                 >
-                  Login
+                  Sign In
                 </Button>
                 <Button
                   component={Link}
-                  to="/register"
+                  to="/signup"
                   variant="outlined"
                   startIcon={<RegisterIcon />}
                   sx={{
@@ -277,37 +315,35 @@ const NavigationBar: React.FC<NavigationBarProps> = () => {
                     },
                   }}
                 >
-                  Register
+                  Sign Up
                 </Button>
               </>
             ) : (
-              !isMobile && (
-                <IconButton
-                  onClick={handleUserMenuOpen}
+              <IconButton
+                onClick={handleUserMenuOpen}
+                sx={{
+                  ml: 2,
+                  transition: "transform 0.3s ease",
+                  "&:hover": {
+                    transform: "scale(1.1)",
+                  },
+                }}
+              >
+                <Avatar
+                  alt="User Avatar"
+                  src={userImage || undefined}
                   sx={{
-                    ml: 2,
-                    transition: "transform 0.3s ease",
+                    width: 40,
+                    height: 40,
+                    border: "2px solid white",
+                    boxShadow: "0 0 10px rgba(255,255,255,0.5)",
                     "&:hover": {
-                      transform: "scale(1.1)",
+                      border: "2px solid #FFCC70",
+                      boxShadow: "0 0 15px rgba(255,204,112,0.7)",
                     },
                   }}
-                >
-                  <Avatar
-                    alt="User Avatar"
-                    src="https://placehold.co/40x40"
-                    sx={{
-                      width: 40,
-                      height: 40,
-                      border: "2px solid white",
-                      boxShadow: "0 0 10px rgba(255,255,255,0.5)",
-                      "&:hover": {
-                        border: "2px solid #FFCC70",
-                        boxShadow: "0 0 15px rgba(255,204,112,0.7)",
-                      },
-                    }}
-                  />
-                </IconButton>
-              )
+                />
+              </IconButton>
             )}
           </Box>
         </Toolbar>

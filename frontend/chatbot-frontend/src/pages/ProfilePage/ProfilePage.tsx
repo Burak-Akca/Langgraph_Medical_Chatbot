@@ -1,4 +1,4 @@
-import React, { useState, useRef, ChangeEvent } from "react";
+import React, { useState, useRef, ChangeEvent, useEffect } from "react";
 import {
   Box,
   Container,
@@ -28,7 +28,9 @@ import {
   AddPhotoAlternate as AddPhotoIcon,
   Delete as DeleteIcon
 } from "@mui/icons-material";
+import axios from "axios";
 import NavigationBar from "../../components/NavigationBar";
+import getUserIdFromToken from "../../components/getUserIdFromToken";
 
 const ProfilePage: React.FC = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -49,7 +51,8 @@ const ProfilePage: React.FC = () => {
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [imageError, setImageError] = useState("");
-
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [userImage, setUserImage] = useState<string | null>(null);
   // Password states
   const [passwords, setPasswords] = useState({
     current: "",
@@ -73,6 +76,9 @@ const ProfilePage: React.FC = () => {
     severity: "success" 
   });
 
+
+  const userId=getUserIdFromToken();
+
   const handleEditToggle = () => {
     if (isEditing) {
       // Cancel editing
@@ -92,6 +98,7 @@ const ProfilePage: React.FC = () => {
       setSelectedImage(null);
       setImagePreview(null);
       setImageError("");
+      setUploadProgress(0);
     }
     setIsEditing(!isEditing);
   };
@@ -244,10 +251,92 @@ const ProfilePage: React.FC = () => {
   const handleRemoveImage = () => {
     setSelectedImage(null);
     setImagePreview(null);
+    setUploadProgress(0);
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
   };
+
+ useEffect(() => {
+    if (userId) {
+      fetchUserImage();
+    }
+
+    // Listen for image update events from other components
+    const handleImageUpdate = (event: CustomEvent<{ imageUrl: string }>) => {
+      setUserImage(event.detail.imageUrl);
+    };
+
+    window.addEventListener('userImageUpdated', handleImageUpdate as EventListener);
+
+    return () => {
+      window.removeEventListener('userImageUpdated', handleImageUpdate as EventListener);
+    };
+  }, [userId]);
+
+
+    const fetchUserImage = async () => {
+      if (!userId) return;
+      
+      try {
+        const token = sessionStorage.getItem("access_token");
+        const response = await axios.get(`https://localhost:7059/api/UserImage/${userId}`, {
+          headers: {
+            ...(token && { Authorization: `Bearer ${token}` })
+          },
+          responseType: 'blob'
+        });
+        
+        // Create an object URL from the image blob
+        const imageUrl = URL.createObjectURL(response.data);
+        setUserImage(imageUrl);
+      } catch (error) {
+        console.error('Error fetching user image:', error);
+        // Silently fail - do not show error notification to user
+      }
+    };
+  
+
+  // Function to upload or update image on the server
+const uploadImageToServer = async (file: File) => {
+  if (!userId) {
+    throw new Error('User ID is required for uploading profile image');
+  }
+
+  try {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('userId', userId);
+
+    const token = sessionStorage.getItem("access_token");
+
+    // Use axios.put instead of post
+    await axios.put(
+      'https://localhost:7059/api/UserImage/upload',
+      formData,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          ...(token && { Authorization: `Bearer ${token}` })
+        }
+      }
+    );
+
+    // Create a local URL for immediate display
+    const imageUrl = URL.createObjectURL(file);
+
+    // Dispatch an event to notify other components (like navbar) about the image update
+    const imageUpdatedEvent = new CustomEvent('userImageUpdated', { 
+      detail: { imageUrl } 
+    });
+    window.dispatchEvent(imageUpdatedEvent);
+
+    return imageUrl;
+  } catch (error) {
+    console.error('Failed to upload or update image:', error);
+    throw error;
+  }
+};
 
   const handleSave = async () => {
     // Validate passwords if user is trying to change them
@@ -256,15 +345,32 @@ const ProfilePage: React.FC = () => {
     }
 
     setLoading(true);
+    let updatedImage = user.profileImage;
+
     try {
-      // Mock API call - in real app would update profile and upload image
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Upload image if selected
+      if (selectedImage) {
+        try {
+          updatedImage = await uploadImageToServer(selectedImage);
+        } catch (uploadError) {
+          console.error("Image upload error:", uploadError);
+          setNotification({
+            open: true,
+            message: "Failed to upload image",
+            severity: "error"
+          });
+          setLoading(false);
+          return;
+        }
+      }
+
+      // In a real app, update other profile data here
+      await new Promise(resolve => setTimeout(resolve, 500));
       
       // Update local state
       setUser({
         ...editedUser,
-        // In a real app, the image URL would come from the server after upload
-        profileImage: imagePreview || user.profileImage
+        profileImage: updatedImage
       });
       setIsEditing(false);
       
@@ -275,7 +381,7 @@ const ProfilePage: React.FC = () => {
         confirm: ""
       });
 
-      // Reset image upload state but keep the image preview
+      // Reset image upload state
       setSelectedImage(null);
       
       // Show success notification
@@ -359,7 +465,7 @@ const ProfilePage: React.FC = () => {
               }
             >
               <Avatar 
-                src={avatarImage}
+                src={userImage || avatarImage}
                 sx={{ 
                   width: 80, 
                   height: 80,
@@ -428,6 +534,36 @@ const ProfilePage: React.FC = () => {
                     <DeleteIcon fontSize="small" />
                   </IconButton>
                 </Box>
+                {uploadProgress > 0 && uploadProgress < 100 && (
+                  <Box sx={{ width: '100%', maxWidth: 200, mt: 1 }}>
+                    <Typography variant="caption" display="block" gutterBottom>
+                      Uploading: {uploadProgress}%
+                    </Typography>
+                    <Box
+                      sx={{
+                        width: '100%',
+                        height: 4,
+                        bgcolor: '#e0e0e0',
+                        borderRadius: 2,
+                        position: 'relative',
+                        overflow: 'hidden'
+                      }}
+                    >
+                      <Box
+                        sx={{
+                          position: 'absolute',
+                          top: 0,
+                          left: 0,
+                          height: '100%',
+                          width: `${uploadProgress}%`,
+                          bgcolor: 'primary.main',
+                          borderRadius: 2,
+                          transition: 'width 0.3s ease'
+                        }}
+                      />
+                    </Box>
+                  </Box>
+                )}
                 {imageError && (
                   <Typography color="error" variant="caption">
                     {imageError}
