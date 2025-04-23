@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Cors.Infrastructure; // CORS kullanmak için bu namespace'i ekleyin
 using System.Reflection;
+using backend.ChatbotService.Services.UserImageServices;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -50,6 +51,8 @@ builder.Services.AddScoped<IConversationService, ConversationService>();
 builder.Services.AddScoped<IMessageService, MessageService>();
 builder.Services.AddScoped<IChatbotResponseService, ChatbotResponseService>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IUserImageService, UserImageService>();
+
 builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
 
 builder.Services.Configure<DatabaseSettings>(builder.Configuration.GetSection("DatabaseSettings"));

@@ -4,6 +4,7 @@ using backend.ChatbotService.Dtos.Message;
 using backend.ChatbotService.Dtos.ChatbotResponse;
 using backend.ChatbotService.Dtos.User;
 using backend.ChatbotService.Entities;
+using backend.ChatbotService.Dtos.UserImage;
 
 namespace backend.ChatbotService.Mapping
 {
@@ -34,6 +35,14 @@ namespace backend.ChatbotService.Mapping
             CreateMap<UpdateUserDto, User>().ReverseMap();
             CreateMap<GetByIdUserDto, User>().ReverseMap();
             CreateMap<ResultUserDto, User>().ReverseMap();
+
+
+            CreateMap<CreateUserImageDto, UserImage>().ReverseMap();
+            CreateMap<UpdateUserImageDto, UserImage>().ReverseMap();
+            CreateMap<GetByIdUserImageDto, UserImage>().ReverseMap();
+            CreateMap<ResultUserImageDto, UserImage>().ReverseMap();
+
+
         }
     }
 }
