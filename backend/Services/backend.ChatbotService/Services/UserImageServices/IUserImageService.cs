@@ -12,10 +12,12 @@ namespace backend.ChatbotService.Services.UserImageServices
 
         Task UpdateUserImageAsync(UpdateUserImageDto updateUserImageDto);
 
-        Task DeleteUserImageAsync(string userImageId);
+        Task<bool> DeleteUserImageAsync(string userId);
 
         Task<GetByIdUserImageDto> GetByIdUserImageAsync(string id);
 
         Task<string> GetUserImagePathByUserIdAsync(string userId);
+        
+
     }
 }

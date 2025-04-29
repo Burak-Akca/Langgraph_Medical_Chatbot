@@ -82,9 +82,10 @@ namespace backend.ChatbotService.Services.UserImageServices
             return userImage?.ImagePath;
         }
 
-        public async Task DeleteUserImageAsync(string userImageId)
+        public async Task<bool> DeleteUserImageAsync(string userId)
         {
-            await _userCollection.DeleteOneAsync(x => x.Id == userImageId);
+            var result = await _userCollection.DeleteOneAsync(x => x.UserId == userId);
+            return result.DeletedCount > 0;
         }
 
         public async Task<List<ResultUserImageDto>> GetAllUserImageAsync()

@@ -426,6 +426,41 @@ const uploadImageToServer = async (file: File) => {
   // Determine the image to display in avatar
   const avatarImage = imagePreview || user.profileImage;
 
+  const handleDeleteProfileImage = async () => {
+  // eslint-disable-next-line no-debugger
+  debugger
+    const userId = getUserIdFromToken();
+    
+    if (!userId) return;
+    
+    try {
+      const token = sessionStorage.getItem("access_token");
+      await axios.delete(`https://localhost:7059/api/UserImage/${userId}`, {
+        headers: {
+          ...(token && { Authorization: `Bearer ${token}` })
+        }
+      });
+
+      // Clear the image from state
+      setUserImage(null);
+      setUser(prev => ({ ...prev, profileImage: "" }));
+
+   
+      setNotification({
+        open: true,
+        message: "Profile photo deleted successfully",
+        severity: "success"
+      });
+    } catch (error) {
+      console.error('Error deleting profile image:', error);
+      setNotification({
+        open: true,
+        message: "Failed to delete profile photo",
+        severity: "error"
+      });
+    }
+  };
+
   return (
     <>
       <NavigationBar />
@@ -468,17 +503,35 @@ const uploadImageToServer = async (file: File) => {
                 ) : null
               }
             >
-              <Avatar 
-                src={userImage || imageUrl ||avatarImage}
-                sx={{ 
-                  width: 80, 
-                  height: 80,
-                  border: "3px solid rgba(255,255,255,0.8)",
-                  boxShadow: "0 2px 8px rgba(0,0,0,0.2)"
-                }}
-              >
-                {!avatarImage && <PersonIcon sx={{ fontSize: 50 }} />}
-              </Avatar>
+              <Box sx={{ position: 'relative' }}>
+                <Avatar 
+                  src={userImage || imageUrl || avatarImage}
+                  sx={{ 
+                    width: 80, 
+                    height: 80,
+                    border: "3px solid rgba(255,255,255,0.8)",
+                    boxShadow: "0 2px 8px rgba(0,0,0,0.2)"
+                  }}
+                >
+                  {!avatarImage && <PersonIcon sx={{ fontSize: 50 }} />}
+                </Avatar>
+                {isEditing && (userImage || imageUrl || avatarImage) && (
+                  <IconButton
+                    size="small"
+                    sx={{
+                      position: 'absolute',
+                      top: -8,
+                      right: -8,
+                      bgcolor: 'error.main',
+                      color: 'white',
+                      '&:hover': { bgcolor: 'error.dark' }
+                    }}
+                    onClick={handleDeleteProfileImage}
+                  >
+                    <DeleteIcon fontSize="small" />
+                  </IconButton>
+                )}
+              </Box>
             </Badge>
             <Box>
               <Typography variant="h5" fontWeight="bold" sx={{ mb: 0.5 }}>

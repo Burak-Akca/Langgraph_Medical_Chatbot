@@ -64,6 +64,48 @@ namespace backend.ChatbotService.Controllers
         }
 
 
+        [HttpDelete("{userId}")]
+        public async Task<IActionResult> DeleteUserImage(string userId)
+        {
+            try
+            {
+                
+
+
+                var relativePath = await _userImageService.GetUserImagePathByUserIdAsync(userId);
+                if (relativePath == null)
+                    return NotFound("Image not found");
+
+                var wwwrootPath = Directory.GetCurrentDirectory();
+                var normalizedPath = relativePath.Replace("/", Path.DirectorySeparatorChar.ToString());
+                var cleanedRelativePath = normalizedPath.TrimStart(Path.DirectorySeparatorChar, '/');
+                var fullPath = Path.Combine(wwwrootPath, cleanedRelativePath);
+
+                if (!System.IO.File.Exists(fullPath))
+                    return NotFound("Image file not found");
+
+                try
+                {
+                    System.IO.File.Delete(fullPath);
+                    var success = await _userImageService.DeleteUserImageAsync(userId);
+                    if (!success) { return NotFound(new { message = "Image not found or could not be deleted." }); }
+
+                    return Ok(new { message = "Image deleted successfully." });
+                }
+                catch (Exception ex)
+                {
+                    return StatusCode(500, new { error = ex.Message });
+                }
+
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { error = ex.Message });
+            }
+        }
+
+
+
 
     }
 }
