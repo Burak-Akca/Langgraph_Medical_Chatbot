@@ -1,4 +1,6 @@
 import axios from "axios";
+import { useNavigate } from 'react-router-dom';
+
 export interface LoginData {
   Username: string;
   Password: string;
@@ -10,7 +12,8 @@ export interface LoginResponse {
   message: string;
   username: string;
   roles: string[]; // Roles dizisi
-}
+}   
+
 
 export const LoginUser = async (userData: LoginData) => {
   // eslint-disable-next-line no-debugger
@@ -52,7 +55,11 @@ export const LoginUser = async (userData: LoginData) => {
   } catch (error) {
     if (axios.isAxiosError(error) && error.response) {
       console.log("Hata Detayı:", error.response);
-      throw new Error(error.response.data.error_description || "Login failed. Please try again.");
+      if(error.response.data === "Kullanıcı adı veya şifre yanlış"){
+      alert("❗ This email address is not associated with an existing account. \n📩 You are being redirected to the registration page to create a new account...");
+      throw new Error("No Registered User Found");
+
+    }
     } else {
       throw new Error("Network error. Please check your connection.");
     }

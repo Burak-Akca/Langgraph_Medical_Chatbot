@@ -72,11 +72,16 @@ export default function SignIn(props: { disableCustomTheme?: boolean }) {
   const [passwordErrorMessage, setPasswordErrorMessage] = React.useState('');
   const [open, setOpen] = React.useState(false);
 
-   const navigate=useNavigate()
+  const navigate=useNavigate()
     
-    const goToHome = () => {
-      navigate("/home"); // "/home" sayfasına yönlendirir
-    };
+  const goToHome = () => {
+    navigate("/home"); // "/home" sayfasına yönlendirir
+  };
+  
+  const goToSignUp = () => {
+    navigate("/signup"); // "/home" sayfasına yönlendirir
+  };
+  
    const login = useGoogleLogin({
         onSuccess: async response => {
             try {
@@ -86,15 +91,41 @@ export default function SignIn(props: { disableCustomTheme?: boolean }) {
                         "Authorization": `Bearer ${response.access_token}`
                     }
                 })
+                console.log(data)
+
+                const username=convertToValidUserName(data.data.name.replace(/\s+/g, ''))+"."+data.data.sub as string;
+
+                const userData:LoginData = {
+                  Username: username as string,
+                  Password:"oO"+data.data.sub+"." as string,
+                };
+                await LoginUser(userData); 
+
+                alert('Login successful!');
+                
+
+
                 console.log(data);
                 goToHome();
             } catch (err) {
+              if (err.message==="No Registered User Found") {
                 console.log(err)
+                goToSignUp();
+
+            }
+                console.error(err);
             }
         }
     });
   
-   
+    function convertToValidUserName(str) {
+      const turkishChars = {
+        'ç': 'c', 'ğ': 'g', 'ı': 'i', 'İ': 'i', 'ö': 'o', 'ş': 's', 'ü': 'u', 'Ç': 'c', 'Ş': 's', 'Ö': 'o', 'Ü': 'u'
+      };
+    
+      return str.split('').map(char => turkishChars[char as keyof typeof turkishChars] || char).join('');
+    }
+    
   
   const handleClickOpen = () => {
     setOpen(true);
@@ -266,7 +297,7 @@ export default function SignIn(props: { disableCustomTheme?: boolean }) {
             <Typography sx={{ textAlign: 'center' }}>
               Don&apos;t have an account?{' '}
               <Link
-                href="/material-ui/getting-started/templates/sign-in/"
+                href="/signup"
                 variant="body2"
                 sx={{ alignSelf: 'center' }}
               >

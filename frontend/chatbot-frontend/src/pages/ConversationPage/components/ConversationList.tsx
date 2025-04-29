@@ -15,6 +15,7 @@ interface ConversationListProps {
   onSelectConversation: (conversation: Conversation) => void;
   onToggleStar: (id: number, event: React.MouseEvent) => void;
   onNewConversation: () => void;
+  onDelete: (id: string) => void;
 }
 
 const ConversationList: React.FC<ConversationListProps> = ({
@@ -23,6 +24,7 @@ const ConversationList: React.FC<ConversationListProps> = ({
   onSelectConversation,
   onToggleStar,
   onNewConversation,
+  onDelete,
 }) => {
   return (
     <>
@@ -52,6 +54,7 @@ const ConversationList: React.FC<ConversationListProps> = ({
             isSelected={selectedConversation?.id === conversation.id}
             onSelect={onSelectConversation}
             onToggleStar={onToggleStar}
+            onDelete={onDelete}
           />
         ))}
       </List>

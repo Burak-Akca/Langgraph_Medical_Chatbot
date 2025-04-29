@@ -16,12 +16,12 @@ export default defineConfig({
     port: 3000, // 3000 portunu kullanacak
     strictPort: true,
     host: true, // Tüm IP adreslerinden erişilebilir
-    origin: "http://0.0.0.0:3000", // 3000 portundan erişim sağlanacak
+    origin: "http://localhost:3000", // 3000 portundan erişim sağlanacak
     allowedHosts: [
       "chatbot.burakakca.com.tr",
       "react-frontend-final3-1014200023198.us-central1.run.app",
       "localhost",
-      "http://localhost:8000",
+     
     ],
   },
   plugins: [react(), tailwindcss(), builderDevTools()],

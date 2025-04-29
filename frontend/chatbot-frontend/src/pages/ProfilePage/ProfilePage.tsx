@@ -31,6 +31,7 @@ import {
 import axios from "axios";
 import NavigationBar from "../../components/NavigationBar";
 import getUserIdFromToken from "../../components/getUserIdFromToken";
+import { useUserImage } from '../../Context/UserImageContext';
 
 const ProfilePage: React.FC = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -53,6 +54,8 @@ const ProfilePage: React.FC = () => {
   const [imageError, setImageError] = useState("");
   const [uploadProgress, setUploadProgress] = useState(0);
   const [userImage, setUserImage] = useState<string | null>(null);
+  const { imageUrl } = useUserImage();
+  
   // Password states
   const [passwords, setPasswords] = useState({
     current: "",
@@ -338,6 +341,7 @@ const uploadImageToServer = async (file: File) => {
   }
 };
 
+
   const handleSave = async () => {
     // Validate passwords if user is trying to change them
     if ((passwords.new || passwords.confirm || passwords.current) && !validatePasswords()) {
@@ -465,7 +469,7 @@ const uploadImageToServer = async (file: File) => {
               }
             >
               <Avatar 
-                src={userImage || avatarImage}
+                src={userImage || imageUrl ||avatarImage}
                 sx={{ 
                   width: 80, 
                   height: 80,

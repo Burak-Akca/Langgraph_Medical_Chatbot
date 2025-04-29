@@ -17,7 +17,11 @@ import AppTheme from '../shared-theme/AppTheme';
 import ColorModeSelect from '../shared-theme/ColorModeSelect';
 import { GoogleIcon, FacebookIcon, SitemarkIcon } from './components/CustomIcons';
 import { registerUser ,RegisterData} from '../../../api/CreateUser'; // API fonksiyonu
-
+import { useNavigate } from 'react-router-dom';
+import { useGoogleLogin } from '@react-oauth/google';
+import axios from 'axios';
+import { LoginData, LoginUser } from '../../../api/LoginUser';
+import { useUserImage } from '../../../Context/UserImageContext';
 const Card = styled(MuiCard)(({ theme }) => ({
   display: 'flex',
   flexDirection: 'column',
@@ -67,6 +71,7 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
   const [passwordErrorMessage, setPasswordErrorMessage] = React.useState('');
   const [nameError, setNameError] = React.useState(false);
   const [nameErrorMessage, setNameErrorMessage] = React.useState('');
+
 
   const validateInputs = () => {
     const email = document.getElementById('email') as HTMLInputElement;
@@ -135,6 +140,68 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
     }
 
   };
+
+  const navigate=useNavigate()
+    
+    const goToHome = () => {
+      navigate("/home"); // "/home" sayfasına yönlendirir
+    };
+
+
+
+  const { setImageUrl } = useUserImage();
+  const login = useGoogleLogin({
+    // eslint-disable-next-line no-debugger
+    onSuccess: async response => {debugger
+        try {
+            const data = await axios.get(
+                'https://www.googleapis.com/oauth2/v3/userinfo', {
+                headers: {
+                    "Authorization": `Bearer ${response.access_token}`
+                }
+            })
+            const username=convertToValidUserName(data.data.name.replace(/\s+/g, ''))+"."+data.data.sub as string;
+
+            const userData:RegisterData = {
+              Username:  username as string,
+              Email: data.data.email as string,
+              Password: "oO"+data.data.sub+"." as string, 
+            };
+
+            const ImageUrl=data.data.picture as string;
+            setImageUrl(ImageUrl)
+            await registerUser(userData); 
+
+            alert('Registration successful!');
+            
+            const loginData:LoginData = {
+                              Username: username as string,
+                              Password:"oO"+data.data.sub+"." as string, 
+                            };
+            await LoginUser(loginData); 
+            
+
+
+            
+
+
+            console.log(data);
+            goToHome();
+        } catch (err) {
+            console.log(err)
+            alert(err)
+        }
+    }
+});
+
+function convertToValidUserName(str) {
+  const turkishChars = {
+    'ç': 'c', 'ğ': 'g', 'ı': 'i', 'İ': 'i', 'ö': 'o', 'ş': 's', 'ü': 'u', 'Ç': 'c', 'Ş': 's', 'Ö': 'o', 'Ü': 'u'
+  };
+
+  return str.split('').map(char => turkishChars[char as keyof typeof turkishChars] || char).join('');
+}
+
 
   return (
     <AppTheme {...props}>
@@ -220,7 +287,7 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
             <Button
               fullWidth
               variant="outlined"
-              onClick={() => alert('Sign up with Google')}
+              onClick={() => login()}
               startIcon={<GoogleIcon />}
             >
               Sign up with Google
@@ -236,7 +303,7 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
             <Typography sx={{ textAlign: 'center' }}>
               Already have an account?{' '}
               <Link
-                href="/material-ui/getting-started/templates/sign-in/"
+                href="/signin"
                 variant="body2"
                 sx={{ alignSelf: 'center' }}
               >

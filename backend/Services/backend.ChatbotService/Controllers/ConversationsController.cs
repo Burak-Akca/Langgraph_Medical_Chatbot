@@ -60,7 +60,7 @@ namespace backend.ChatbotService.Controllers
             var createdConversation = await _conversationService.CreateConversationAsync(createConversationDto);
             return Ok(createdConversation); 
         }
-        [HttpDelete]
+        [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteConversationAsync(string id)
         {
             await _conversationService.DeleteConversationAsync(id);

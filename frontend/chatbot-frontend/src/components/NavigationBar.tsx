@@ -22,6 +22,8 @@ import MobileDrawer from "./MobileDrawer";
 import LogoutConfirmation from "./LogoutConfirmation";
 import axios from "axios";
 import getUserIdFromToken from "./getUserIdFromToken";
+import { useUserImage } from '../Context/UserImageContext';
+
 
 const NavigationBar: React.FC = () => {
   // This would typically come from your auth context or state management
@@ -35,7 +37,7 @@ const NavigationBar: React.FC = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const userId = getUserIdFromToken();
-
+  const { imageUrl } = useUserImage();
   // Fetch user profile image on component mount
   useEffect(() => {
     if (userId) {
@@ -331,7 +333,7 @@ const NavigationBar: React.FC = () => {
               >
                 <Avatar
                   alt="User Avatar"
-                  src={userImage || undefined}
+                  src={userImage || imageUrl}
                   sx={{
                     width: 40,
                     height: 40,

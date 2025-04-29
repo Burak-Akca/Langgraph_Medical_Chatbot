@@ -16,11 +16,12 @@ import SignUp from "./pages/materialUI/sign-up/SignUp";
 import "./App.css";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Unauthorized from "./pages/Unauthorized";
+import { UserImageProvider } from './Context/UserImageContext';
 
 
 
 const App: React.FC = () => {
-  return (
+  return (<UserImageProvider>
     <Router>
       <Routes>
         <Route path="/" element={<Navigate to="/home" replace />} />
@@ -40,6 +41,7 @@ const App: React.FC = () => {
         <Route path="*" element={<Navigate to="/home" replace />} />
       </Routes>
     </Router>
+    </UserImageProvider>
   );
 };
 

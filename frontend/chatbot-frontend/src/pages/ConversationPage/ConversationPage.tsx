@@ -245,7 +245,7 @@ try{
 // eslint-disable-next-line no-debugger
 debugger
 try{
-      const response = await axios.post("https://medical-chatbot-backend-1014200023198.us-central1.run.app/rag", {
+      const response = await axios.post("http://127.0.0.1:8000/rag", {
         question: text
       })
         // eslint-disable-next-line no-debugger
@@ -298,6 +298,22 @@ console.log("Error fetching bot response:", error);
     }
   }, [conversationsError]);
 
+  // Handle deleting a conversation
+  const handleDelete = async (id: string) => {
+    try {
+      setConversations((prevConversations) =>
+        prevConversations.filter((conv) => conv.id !== id)
+      );
+      if (selectedConversation?.id === id) {
+        setSelectedConversation(null);
+        setMessages([]);
+      }
+    } catch (error) {
+      console.error("Error deleting conversation:", error);
+      setError("Failed to delete conversation. Please try again later.");
+    }
+  };
+
   return (
     <div>
       <NavigationBar />
@@ -311,6 +327,7 @@ console.log("Error fetching bot response:", error);
           onSelectConversation={handleSelectConversation}
           onToggleStar={handleToggleStar}
           onNewConversation={handleNewConversation}
+          onDelete={handleDelete}
         />
 
         {/* Main Content */}

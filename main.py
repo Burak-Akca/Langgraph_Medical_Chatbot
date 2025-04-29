@@ -8,12 +8,18 @@ import os
 
 
 api = FastAPI()
+
+origins = [
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+]
+
 api.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Ya da belirli bir domain: ["http://localhost:3000"]
+    allow_origins=origins,  # '*' yerine belirli adresler
     allow_credentials=True,
-    allow_methods=["*"],  # Tüm HTTP metodlarına izin ver
-    allow_headers=["*"],  # Tüm başlıklara izin ver
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 # Girdi modeli (request body için)

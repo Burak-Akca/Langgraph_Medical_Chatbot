@@ -14,14 +14,17 @@ import {
 import {
   Star as StarIcon,
   StarBorder as StarBorderIcon,
+  Delete as DeleteIcon,
 } from "@mui/icons-material";
 import { Conversation } from "../types";
+import axios from "axios";
 
 interface ConversationItemProps {
   conversation: Conversation;
   isSelected: boolean;
   onSelect: (conversation: Conversation) => void;
   onToggleStar: (id: number, event: React.MouseEvent) => void;
+  onDelete: (id: string) => void;
 }
 
 const StyledListItemButton = styled(ListItemButton)<{ active?: boolean }>(
@@ -43,6 +46,7 @@ const ConversationItem: React.FC<ConversationItemProps> = ({
   isSelected,
   onSelect,
   onToggleStar,
+  onDelete,
 }) => {
   // Format date for display
   const formatDate = (date: Date): string => {
@@ -59,6 +63,23 @@ const ConversationItem: React.FC<ConversationItemProps> = ({
       return `${diffDays} days ago`;
     } else {
       return date.toLocaleDateString();
+    }
+  };
+
+  const handleDelete = async (e: React.MouseEvent) => {
+    // eslint-disable-next-line no-debugger
+    debugger
+    e.stopPropagation();
+    try {
+      const token = sessionStorage.getItem("access_token");
+      await axios.delete(`https://localhost:7059/api/Conversations/${conversation.id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      onDelete(conversation.id);
+    } catch (error) {
+      console.error("Error deleting conversation:", error);
     }
   };
 
@@ -109,19 +130,30 @@ const ConversationItem: React.FC<ConversationItemProps> = ({
         <Typography variant="caption" color="text.secondary">
           {/* {formatDate(conversation.startedAt)} */}
         </Typography>
-        <Tooltip title={conversation.starred ? "Unstar" : "Star"}>
-          <IconButton
-            size="small"
-            onClick={(e) => onToggleStar(conversation.id, e)}
-            sx={{ mt: 0.5 }}
-          >
-            {conversation.starred ? (
-              <StarIcon fontSize="small" color="primary" />
-            ) : (
-              <StarBorderIcon fontSize="small" />
-            )}
-          </IconButton>
-        </Tooltip>
+        <Box sx={{ display: "flex", gap: 0.5 }}>
+          <Tooltip title={conversation.starred ? "Unstar" : "Star"}>
+            <IconButton
+              size="small"
+              onClick={(e) => onToggleStar(conversation.id, e)}
+              sx={{ mt: 0.5 }}
+            >
+              {conversation.starred ? (
+                <StarIcon fontSize="small" color="primary" />
+              ) : (
+                <StarBorderIcon fontSize="small" />
+              )}
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Delete">
+            <IconButton
+              size="small"
+              onClick={handleDelete}
+              sx={{ mt: 0.5, color: "error.main" }}
+            >
+              <DeleteIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+        </Box>
       </Box>
     </StyledListItemButton>
   );

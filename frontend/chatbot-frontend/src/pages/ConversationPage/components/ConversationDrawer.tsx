@@ -20,6 +20,7 @@ interface ConversationDrawerProps {
   onSelectConversation: (conversation: Conversation) => void;
   onToggleStar: (id: number, event: React.MouseEvent) => void;
   onNewConversation: () => void;
+  onDelete: (id: string) => void;
 }
 
 const drawerWidth = 300;
@@ -41,6 +42,7 @@ const ConversationDrawer: React.FC<ConversationDrawerProps> = ({
   onSelectConversation,
   onToggleStar,
   onNewConversation,
+  onDelete,
 }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
@@ -79,6 +81,7 @@ const ConversationDrawer: React.FC<ConversationDrawerProps> = ({
         onSelectConversation={onSelectConversation}
         onToggleStar={onToggleStar}
         onNewConversation={onNewConversation}
+        onDelete={onDelete}
       />
     </Drawer>
   );
