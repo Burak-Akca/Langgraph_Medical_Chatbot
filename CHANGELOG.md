@@ -1,0 +1,65 @@
+# Changelog
+
+All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
+
+## 1.1.0 (2025-04-30)
+
+
+### Features
+
+* - Added GOOGLE_API_KEY and TAVILY_API_KEY as environment variables from Kubernetes secrets in deployment.yaml ([19423fb](https://github.com/Burak-Akca/Langgraph_Medical_Chatbot/commit/19423fbdf38c427541675ac5572e680c28fb5d46))
+* Add DVC pull stage to Jenkinsfile and update dependencies ([b7290fe](https://github.com/Burak-Akca/Langgraph_Medical_Chatbot/commit/b7290feb9c7e9e228fa6bfc2c60b3404a6e81863))
+* Add stage for setting up virtual environment and installing dependencies ([77a2613](https://github.com/Burak-Akca/Langgraph_Medical_Chatbot/commit/77a261329aafe7b54e66d825197b3f788de57f68))
+* Added Vector Database ([bb78900](https://github.com/Burak-Akca/Langgraph_Medical_Chatbot/commit/bb7890065be0fff32298271a6c943cca764209ec))
+* **api/user-image:** implement user image upload and update via PUT ([be5e217](https://github.com/Burak-Akca/Langgraph_Medical_Chatbot/commit/be5e217239a6719b2ec921a11b6ca1a62002fa12))
+* **auth:** implement IdentityServer configuration, login/register APIs, token handling, and role-based authorization ([ddf7810](https://github.com/Burak-Akca/Langgraph_Medical_Chatbot/commit/ddf7810752224956c23cf220a7fcd98c69ce6d90))
+* **auth:** implement JWT authentication and authorization flow with access and refresh tokens; add protected routing to frontend ([5215705](https://github.com/Burak-Akca/Langgraph_Medical_Chatbot/commit/5215705d38cd0c7fe98930cc9df245ad18761993))
+* **backend:** Implemented chatbot service and integrated IdentityServer for authentication and authorization management. ([429552c](https://github.com/Burak-Akca/Langgraph_Medical_Chatbot/commit/429552caa76478fe1ea62fcee2f6db1ee80034db))
+* **ci:** Add secret file handling for .env in Jenkins pipeline ([58ff9dd](https://github.com/Burak-Akca/Langgraph_Medical_Chatbot/commit/58ff9dd75c4d9905fc60475d53802b55e51e93ca))
+* **ci:** add staging configuration for GCR and GKE deployment ([0d5893d](https://github.com/Burak-Akca/Langgraph_Medical_Chatbot/commit/0d5893dce8e8018ddb84fe8ff564027446fe36e6))
+* **ci:** Removed the env configration ([8d0c8cb](https://github.com/Burak-Akca/Langgraph_Medical_Chatbot/commit/8d0c8cbfaf4a937f9c074a3000104a5434180678))
+* configure and enable functionality of handleSendMessage, add profile page ([9afaf04](https://github.com/Burak-Akca/Langgraph_Medical_Chatbot/commit/9afaf046d171ac5c115cb4a9d85b1da9e0d06f6f))
+* **data:** update dataset for RAG ([24cd0ce](https://github.com/Burak-Akca/Langgraph_Medical_Chatbot/commit/24cd0ce92c66fe2e44021fac050487ce350f9c22))
+* **deployment:** add 2 replicas with resource limits (4Gi RAM, 1 vCPU per pod) ([cd68c7b](https://github.com/Burak-Akca/Langgraph_Medical_Chatbot/commit/cd68c7becbdccba06914a1ae59ab9b3299b0f4da))
+* Project installation and graph production completed ([7872998](https://github.com/Burak-Akca/Langgraph_Medical_Chatbot/commit/78729989fca20a5f57b5b8daad7182b638cc2b34))
+* Push data to GCP bucket using DVC ([c5e2921](https://github.com/Burak-Akca/Langgraph_Medical_Chatbot/commit/c5e29210172e224a4e6f721bf957c1e167347be9))
+* **security:** use Jenkins secrets for API key in Cloud Run deployment ([41b3972](https://github.com/Burak-Akca/Langgraph_Medical_Chatbot/commit/41b39721d41e2e73fb9edc446cf8b4695544bacc))
+* **session:** integrate session save and fetch with backend using axios ([eb11000](https://github.com/Burak-Akca/Langgraph_Medical_Chatbot/commit/eb110002f6f364151e2bf0c382eab86f6cb8a381))
+* **ui/profile:** enable profile image upload and update via PUT request ([edfc740](https://github.com/Burak-Akca/Langgraph_Medical_Chatbot/commit/edfc740ecce1c7667064627f272e3148f67f15b8))
+* update DTOs and services to support frontend requirements ([f9d1e47](https://github.com/Burak-Akca/Langgraph_Medical_Chatbot/commit/f9d1e47bd94486be63befe4682bd626f010b97eb))
+* **user:** add profile image upload and update functionality ([a6c437a](https://github.com/Burak-Akca/Langgraph_Medical_Chatbot/commit/a6c437aa9462b86cb463cd4a297e12bef37fa3e6))
+* **user:** enable profile image deletion and UI update ([91fd887](https://github.com/Burak-Akca/Langgraph_Medical_Chatbot/commit/91fd8871a39b5eec150ef068ca314269708546c2))
+
+
+### Bug Fixes
+
+* Adjusted  deployment.yaml to previous settings ([b8ea14d](https://github.com/Burak-Akca/Langgraph_Medical_Chatbot/commit/b8ea14d108d8e5c50b3dd13d24a3c8849a2e7dc1))
+* Adjusted  deployment.yaml to previous settings ([9f731bc](https://github.com/Burak-Akca/Langgraph_Medical_Chatbot/commit/9f731bc56d2c6fd56ae1a9cde1e49876b8490654))
+* Adjusted cloud repo configration ([07c0660](https://github.com/Burak-Akca/Langgraph_Medical_Chatbot/commit/07c06604a4922988d6c2e82dcbbc1bd973a323b9))
+* Adjusted cloud repo configration ([4c9b409](https://github.com/Burak-Akca/Langgraph_Medical_Chatbot/commit/4c9b409c29dd43b0c3f856d204e35e9a07f291e5))
+* Adjusted cloud repo configration ([3bd5278](https://github.com/Burak-Akca/Langgraph_Medical_Chatbot/commit/3bd52780fa527ff57d5a4013a141d39c07d914a0))
+* Adjusted cloud repo configration ([6c5b259](https://github.com/Burak-Akca/Langgraph_Medical_Chatbot/commit/6c5b259df3df15df7cdeaf932e0a8cf0567a3bce))
+* Adjusted cloud repo configration ([63d7803](https://github.com/Burak-Akca/Langgraph_Medical_Chatbot/commit/63d7803d2996a61134a111b5dc8415f03729eaf4))
+* Adjusted cloud repo configration ([ef8e60a](https://github.com/Burak-Akca/Langgraph_Medical_Chatbot/commit/ef8e60ac3d741b86aa2d86b41c2ccb2422a0f79e))
+* Adjusted deployment.yaml file for gke ([31a8c81](https://github.com/Burak-Akca/Langgraph_Medical_Chatbot/commit/31a8c815d12a6052b61a4658f90c631628348d1c))
+* Adjusted deployment.yaml for replica count set to 1 ([8b5cabb](https://github.com/Burak-Akca/Langgraph_Medical_Chatbot/commit/8b5cabbf7f6fd50ee04578befce436e98919274d))
+* Adjusted deployment.yaml for replica count set to 2 ([b785994](https://github.com/Burak-Akca/Langgraph_Medical_Chatbot/commit/b7859947ab1b4436f95a99fc4aea840961e3edf9))
+* Adjusted Dockerfile for deployment failure ([2a3cccd](https://github.com/Burak-Akca/Langgraph_Medical_Chatbot/commit/2a3cccd97239eee344216330285d4d92ea04f73b))
+* Adjusted Dockerfile for deployment failure ([32ab9cf](https://github.com/Burak-Akca/Langgraph_Medical_Chatbot/commit/32ab9cfcfd63e61543e0e35b901086b82d11d7b9))
+* Adjusted Dockerfile for deployment failure ([972c8fa](https://github.com/Burak-Akca/Langgraph_Medical_Chatbot/commit/972c8fae3b85d42cf38a0a00f4e906323bb5f777))
+* Adjusted Dockerfile for deployment failure ([d194911](https://github.com/Burak-Akca/Langgraph_Medical_Chatbot/commit/d194911ac8180708971d0f881323ce1585b9f397))
+* Adjusted ingestion.py and deployment.yaml to previous settings ([e09474c](https://github.com/Burak-Akca/Langgraph_Medical_Chatbot/commit/e09474ca5f9e9014ab39a59044b02c72ee59e9b2))
+* Adjusted Jenkinsfile for .env file ([a918eec](https://github.com/Burak-Akca/Langgraph_Medical_Chatbot/commit/a918eec0b03a574b9c3c9a6f050c4c348299c417))
+* Adjusted Jenkinsfile for .env file ([bebfde7](https://github.com/Burak-Akca/Langgraph_Medical_Chatbot/commit/bebfde71f78e4dfea8dc3e80de311886c86efb7b))
+* Adjusted Jenkinsfile for .env file ([21b88ea](https://github.com/Burak-Akca/Langgraph_Medical_Chatbot/commit/21b88ea911d65e37c61afc73a400fb61a310a0b5))
+* Adjusted Jenkinsfile for .env file ([dcd0e7e](https://github.com/Burak-Akca/Langgraph_Medical_Chatbot/commit/dcd0e7ee05dd461acc8d3bf70a7073efa8b3cf69))
+* Adjusted jenkinsfile for GCR ([1bacdff](https://github.com/Burak-Akca/Langgraph_Medical_Chatbot/commit/1bacdff8a927e8f20b6db97fe0746ee76f9e6f02))
+* **deployment:** Adjusted Vector Database Path ([c1b3593](https://github.com/Burak-Akca/Langgraph_Medical_Chatbot/commit/c1b35939a719f0d155b46a5b85ac16fe3cff4397))
+* **deployment:** check if secret exists before creating it ([6e1c12b](https://github.com/Burak-Akca/Langgraph_Medical_Chatbot/commit/6e1c12b83b5845e7e875e380aac40fff2c2a25a1))
+* Dockerfile adjusted ([c02df7e](https://github.com/Burak-Akca/Langgraph_Medical_Chatbot/commit/c02df7ed612156ef445ceff111b33215fe5a56f1))
+* Ensure virtual environment is reused and dependencies are updated if environment exists ([267c6da](https://github.com/Burak-Akca/Langgraph_Medical_Chatbot/commit/267c6da083e9a49ddf5f7be21cf3d7f3064929b1))
+* Jenkinsfile syntax error due to missing parentheses ([0ba4609](https://github.com/Burak-Akca/Langgraph_Medical_Chatbot/commit/0ba46094914763f9e0faa8e4bd4c669848f63776))
+* **profile:** update image deletion workflow ([287ea60](https://github.com/Burak-Akca/Langgraph_Medical_Chatbot/commit/287ea60d9d88c77a985cb58e1a94c5fe19839bcd))
+* remove appsettings.json from version control ([14db58e](https://github.com/Burak-Akca/Langgraph_Medical_Chatbot/commit/14db58efc078ad8b988a9d7f4df7ee0310b2bd12))
+* Removed docker file from .gitignore ([84e9133](https://github.com/Burak-Akca/Langgraph_Medical_Chatbot/commit/84e913329a5e431d7a94b113fb9d9229053fce46))
+* Update Jenkinsfile pipeline syntax ([eb9c4a7](https://github.com/Burak-Akca/Langgraph_Medical_Chatbot/commit/eb9c4a75b39737fa69b289e409c813ac76861087))
