@@ -32,30 +32,47 @@ import axios from "axios";
 import NavigationBar from "../../components/NavigationBar";
 import getUserIdFromToken from "../../components/getUserIdFromToken";
 import { useUserImage } from '../../Context/UserImageContext';
+import {useUserById} from "../../hooks/GetUserInfo";
 
 const ProfilePage: React.FC = () => {
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  
+  const userId=getUserIdFromToken();
+
   const [user, setUser] = useState({
-    name: "John Doe",
-    email: "john.doe@example.com",
-    role: "User",
+    name:  "null",
+    email: "null",
+    role: "null",
     joinDate: "January 1, 2023",
     profileImage: ""
   });
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  
+
   
   const [loading, setLoading] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editedUser, setEditedUser] = useState({ ...user });
-  
+
   // Image upload states
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [imageError, setImageError] = useState("");
   const [uploadProgress, setUploadProgress] = useState(0);
   const [userImage, setUserImage] = useState<string | null>(null);
-  const { imageUrl } = useUserImage();
-  
+  const { imageUrl, setImageUrl } = useUserImage();
+
+// eslint-disable-next-line no-debugger
+debugger
+
+
+
+   useUserById({
+      userId,
+      setUser,
+    
+    });
+    
+
+
   // Password states
   const [passwords, setPasswords] = useState({
     current: "",
@@ -80,9 +97,10 @@ const ProfilePage: React.FC = () => {
   });
 
 
-  const userId=getUserIdFromToken();
 
   const handleEditToggle = () => {
+    // eslint-disable-next-line no-debugger
+    debugger
     if (isEditing) {
       // Cancel editing
       setEditedUser({ ...user });
@@ -107,6 +125,8 @@ const ProfilePage: React.FC = () => {
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    // eslint-disable-next-line no-debugger
+    debugger
     const { name, value } = e.target;
     setEditedUser(prev => ({
       ...prev,
@@ -115,6 +135,8 @@ const ProfilePage: React.FC = () => {
   };
 
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    // eslint-disable-next-line no-debugger
+    debugger
     const { name, value } = e.target;
     setPasswords(prev => ({
       ...prev,
@@ -352,7 +374,36 @@ const uploadImageToServer = async (file: File) => {
     let updatedImage = user.profileImage;
 
     try {
-      // Upload image if selected
+      // If we're in edit mode and there's no image, it means the user deleted the image
+      if (isEditing && !userImage && !selectedImage) {
+        try {
+          const token = sessionStorage.getItem("access_token");
+          await axios.delete(`https://localhost:7059/api/UserImage/${userId}`, {
+            headers: {
+              ...(token && { Authorization: `Bearer ${token}` })
+            }
+          });
+          updatedImage = "";
+          
+          // Update the UserImageContext and notify other components
+          setImageUrl(null);
+          const imageUpdatedEvent = new CustomEvent('userImageUpdated', { 
+            detail: { imageUrl: null } 
+          });
+          window.dispatchEvent(imageUpdatedEvent);
+        } catch (error) {
+          console.error('Error deleting profile image:', error);
+          setNotification({
+            open: true,
+            message: "Failed to delete profile photo",
+            severity: "error"
+          });
+          setLoading(false);
+          return;
+        }
+      }
+
+      // Upload new image if selected
       if (selectedImage) {
         try {
           updatedImage = await uploadImageToServer(selectedImage);
@@ -370,12 +421,32 @@ const uploadImageToServer = async (file: File) => {
 
       // In a real app, update other profile data here
       await new Promise(resolve => setTimeout(resolve, 500));
-      
-      // Update local state
-      setUser({
-        ...editedUser,
-        profileImage: updatedImage
-      });
+
+      try {
+        const response = await axios.get(`http://localhost:5001/api/User/${userId}`);
+        const updatedUser = {
+          name: response.data.username || "Not set",
+          email: response.data.email || "Not set",
+          role: response.data.roles[0] || "User",
+          joinDate: new Date().toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+          }),
+          profileImage: updatedImage
+        };
+        setUser(updatedUser);
+      } catch (err) {
+        console.error("Failed to fetch user information:", err);
+        setNotification({
+          open: true,
+          message: "Failed to update profile information",
+          severity: "error"
+        });
+        setLoading(false);
+        return;
+      }
+
       setIsEditing(false);
       
       // Reset password fields
@@ -387,6 +458,7 @@ const uploadImageToServer = async (file: File) => {
 
       // Reset image upload state
       setSelectedImage(null);
+      setImagePreview(null);
       
       // Show success notification
       let message = "Profile updated successfully!";
@@ -396,6 +468,8 @@ const uploadImageToServer = async (file: File) => {
         message = "Profile and password updated successfully!";
       } else if (selectedImage) {
         message = "Profile and profile photo updated successfully!";
+      } else if (!userImage && !selectedImage) {
+        message = "Profile photo deleted successfully!";
       }
       
       setNotification({
@@ -426,39 +500,12 @@ const uploadImageToServer = async (file: File) => {
   // Determine the image to display in avatar
   const avatarImage = imagePreview || user.profileImage;
 
-  const handleDeleteProfileImage = async () => {
-  // eslint-disable-next-line no-debugger
-  debugger
-    const userId = getUserIdFromToken();
-    
-    if (!userId) return;
-    
-    try {
-      const token = sessionStorage.getItem("access_token");
-      await axios.delete(`https://localhost:7059/api/UserImage/${userId}`, {
-        headers: {
-          ...(token && { Authorization: `Bearer ${token}` })
-        }
-      });
-
-      // Clear the image from state
-      setUserImage(null);
-      setUser(prev => ({ ...prev, profileImage: "" }));
-
-   
-      setNotification({
-        open: true,
-        message: "Profile photo deleted successfully",
-        severity: "success"
-      });
-    } catch (error) {
-      console.error('Error deleting profile image:', error);
-      setNotification({
-        open: true,
-        message: "Failed to delete profile photo",
-        severity: "error"
-      });
-    }
+  const handleDeleteProfileImage = () => {
+    // Only clear the local state
+    setUserImage(null);
+    setUser(prev => ({ ...prev, profileImage: "" }));
+    setImagePreview(null);
+    setSelectedImage(null);
   };
 
   return (
@@ -638,7 +685,7 @@ const uploadImageToServer = async (file: File) => {
                   <TextField
                     fullWidth
                     name="name"
-                    value={editedUser.name}
+                    value={user.name}
                     onChange={handleChange}
                     variant="outlined"
                     size="small"
@@ -656,7 +703,7 @@ const uploadImageToServer = async (file: File) => {
                   <TextField
                     fullWidth
                     name="email"
-                    value={editedUser.email}
+                    value={user.email}
                     onChange={handleChange}
                     variant="outlined"
                     size="small"

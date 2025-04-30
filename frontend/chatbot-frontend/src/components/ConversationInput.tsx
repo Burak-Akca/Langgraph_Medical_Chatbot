@@ -16,7 +16,7 @@ const ConversationInput: React.FC<ConversationInputProps> = ({
   const [userInput, setUserInput] = useState<string>("");
 
   const handleSendMessage = () => {
-    if (userInput.trim() && !disabled) {
+    if (userInput .trim() && !disabled) {
       onSendMessage(userInput);
       setUserInput("");
     }

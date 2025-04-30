@@ -1,4 +1,4 @@
-const getUserIdFromToken = (): string | null => {
+const   getUserIdFromToken = (): string | null => {
     const token = sessionStorage.getItem("access_token");
     if (!token) return null;
   
