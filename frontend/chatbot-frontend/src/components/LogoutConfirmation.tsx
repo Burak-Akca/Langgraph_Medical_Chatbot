@@ -10,6 +10,7 @@ import {
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { LogoutOutlined } from "@mui/icons-material";
+import {useUserImage} from "../Context/UserImageContext";
 
 interface LogoutConfirmationProps {
   open: boolean;
@@ -22,8 +23,10 @@ const LogoutConfirmation: React.FC<LogoutConfirmationProps> = ({
 }) => {
   const [isHovering, setIsHovering] = useState(false);
   const navigate = useNavigate();
+  const { imageUrl,setImageUrl } = useUserImage();
 
   const handleLogout = () => {
+    setImageUrl(null);
     sessionStorage.removeItem("access_token");
     navigate("/signin");
   };

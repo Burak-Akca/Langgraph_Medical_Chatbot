@@ -47,25 +47,44 @@ namespace backend.IdentityServer.Controllers
         [HttpPut("update")]
         public async Task<IActionResult> UpdateUser(UserUpdateDto dto)
         {
-            var user = await _userManager.FindByNameAsync(dto.Username);
+            var user = await _userManager.FindByIdAsync(dto.id);
             if (user == null)
             {
                 return NotFound("Kullanıcı bulunamadı.");
             }
 
-            user.Name = dto.Name;
-            user.Surname = dto.Surname;
+            // Kullanıcı adı ve e-posta güncelleniyor
+            user.UserName = dto.Username;
             user.Email = dto.Email;
 
-            var result = await _userManager.UpdateAsync(user);
-            if (result.Succeeded)
+            // Şifre güncellenmesi gerekiyorsa
+            if (!string.IsNullOrEmpty(dto.CurrentPassword) &&
+                !string.IsNullOrEmpty(dto.NewPassword) &&
+                !string.IsNullOrEmpty(dto.ConfirmPassword))
             {
-                return Ok("Kullanıcı bilgileri güncellendi.");
+                if (dto.NewPassword != dto.ConfirmPassword)
+                {
+                    return BadRequest("Yeni şifre ve tekrar şifre uyuşmuyor.");
+                }
+
+                var passwordResult = await _userManager.ChangePasswordAsync(user, dto.CurrentPassword, dto.NewPassword);
+                if (!passwordResult.Succeeded)
+                {
+                    return BadRequest(passwordResult.Errors);
+                }
             }
 
-            return BadRequest(result.Errors);
+            // Şifre alanları boş olsa bile, kullanıcı bilgileri güncellenir
+            var updateResult = await _userManager.UpdateAsync(user);
+            if (!updateResult.Succeeded)
+            {
+                return BadRequest(updateResult.Errors);
+            }
+
+            return Ok("Kullanıcı bilgileri başarıyla güncellendi.");
         }
 
+
     }
-    }
+}
 

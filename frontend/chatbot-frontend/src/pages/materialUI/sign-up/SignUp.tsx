@@ -160,7 +160,9 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
                     "Authorization": `Bearer ${response.access_token}`
                 }
             })
-            const username=convertToValidUserName(data.data.name.replace(/\s+/g, ''))+"."+data.data.sub as string;
+
+            console.log(data.data)
+            const username=data.data.name+"."+data.data.sub as string;
 
             const userData:RegisterData = {
               Username:  username as string,

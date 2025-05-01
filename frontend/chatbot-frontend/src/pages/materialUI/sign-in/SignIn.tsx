@@ -18,6 +18,7 @@ import AppTheme from '../shared-theme/AppTheme';
 import ColorModeSelect from '../shared-theme/ColorModeSelect';
 import { GoogleIcon, FacebookIcon, SitemarkIcon } from './components/CustomIcons';
 import { useGoogleLogin } from '@react-oauth/google';
+import { useUserImage } from '../../../Context/UserImageContext';
 
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -81,7 +82,8 @@ export default function SignIn(props: { disableCustomTheme?: boolean }) {
   const goToSignUp = () => {
     navigate("/signup"); // "/home" sayfasına yönlendirir
   };
-  
+  const { setImageUrl } = useUserImage();
+
    const login = useGoogleLogin({
         onSuccess: async response => {
             try {
@@ -93,12 +95,14 @@ export default function SignIn(props: { disableCustomTheme?: boolean }) {
                 })
                 console.log(data)
 
-                const username=convertToValidUserName(data.data.name.replace(/\s+/g, ''))+"."+data.data.sub as string;
+                const username=data.data.name+"."+data.data.sub as string;
 
                 const userData:LoginData = {
                   Username: username as string,
                   Password:"oO"+data.data.sub+"." as string,
                 };
+                const ImageUrl=data.data.picture as string;
+                setImageUrl(ImageUrl)
                 await LoginUser(userData); 
 
                 alert('Login successful!');

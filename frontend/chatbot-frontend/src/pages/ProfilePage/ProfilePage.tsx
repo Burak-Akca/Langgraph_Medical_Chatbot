@@ -41,6 +41,9 @@ const ProfilePage: React.FC = () => {
     name:  "null",
     email: "null",
     role: "null",
+    current:"",
+    new:"",
+    confirm:"",
     joinDate: "January 1, 2023",
     profileImage: ""
   });
@@ -60,16 +63,15 @@ const ProfilePage: React.FC = () => {
   const [userImage, setUserImage] = useState<string | null>(null);
   const { imageUrl, setImageUrl } = useUserImage();
 
-// eslint-disable-next-line no-debugger
-debugger
+  const [isEmailLogin, setIsEmailLogin] = useState(false);
 
 
 
-   useUserById({
-      userId,
-      setUser,
-    
-    });
+  useUserById({
+    userId,
+    setUser,
+    setIsEmailLogin
+  });
     
 
 
@@ -98,12 +100,70 @@ debugger
 
 
 
-  const handleEditToggle = () => {
+  const handleEditToggle = async () => {
     // eslint-disable-next-line no-debugger
     debugger
+    if (isEmailLogin) {
+      setNotification({
+        open: true,
+        message: "Profile editing is not available for email login users",
+        severity: "error"
+      });
+      return;
+    }
+
+    try {
+      const response = await axios.get(`http://localhost:5001/api/User/${userId}`);
+
+
+      const hasEmailLogin = /\.\d{21}$/.test(response.data.username); // Nokta sonrası tam olarak 18 haneli sayı kontrolü
+
+      if(hasEmailLogin){
+        setEditedUser({
+        name: response.data.username.split('.')[0] || "null",
+        email: response.data.email || "null",
+        role: response.data.roles[0],
+        current:"",
+        new:"",
+        confirm:"",
+        joinDate: "January 1, 2023",
+        profileImage: ""
+      });}
+      else{
+        setEditedUser({
+          name: response.data.username || "null",
+          email: response.data.email || "null",
+          role: response.data.roles[0],
+          joinDate: "January 1, 2023",
+          current:"",
+          new:"",
+          confirm:"",
+          profileImage: ""
+        });
+      }
+
+
+
+
+
+    } catch (err) {
+      console.error("Kullanıcı bilgisi alınamadı:", err);
+      setEditedUser({
+        name: "",
+        email: "",
+        role: "",
+        joinDate: "",
+        current:"",
+        new:"",
+        confirm:"",
+        profileImage: ""
+      });
+    } finally {
+      setLoading(false);
+    }
+
     if (isEditing) {
       // Cancel editing
-      setEditedUser({ ...user });
       // Reset password fields
       setPasswords({
         current: "",
@@ -125,13 +185,73 @@ debugger
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    // eslint-disable-next-line no-debugger
-    debugger
     const { name, value } = e.target;
     setEditedUser(prev => ({
       ...prev,
       [name]: value
     }));
+
+    setPasswords(prev => ({
+      ...prev,
+      [name]: value
+    }));
+
+    if (passwordErrors[name as keyof typeof passwordErrors]) {
+      setPasswordErrors(prev => ({
+        ...prev,
+        [name]: ""
+      }));
+    }
+
+    // Validate confirm password when typing
+    if (name === "confirm" && value !== passwords.new) {
+      setPasswordErrors(prev => ({
+        ...prev,
+        confirm: "Passwords don't match"
+      }));
+    } else if (name === "confirm") {
+      setPasswordErrors(prev => ({
+        ...prev,
+        confirm: ""
+      }));
+    }
+
+    // Validate new password when typing
+    if (name === "new") {
+      if (value.length > 0 && value.length < 8) {
+        setPasswordErrors(prev => ({
+          ...prev,
+          new: "Password must be at least 8 characters"
+        }));
+      } else {
+        setPasswordErrors(prev => ({
+          ...prev,
+          new: ""
+        }));
+      }
+
+      // Update confirm error state if confirm already has a value
+      if (passwords.confirm && value !== passwords.confirm) {
+        setPasswordErrors(prev => ({
+          ...prev,
+          confirm: "Passwords don't match"
+        }));
+      } else if (passwords.confirm) {
+        setPasswordErrors(prev => ({
+          ...prev,
+          confirm: ""
+        }));
+      }
+    }
+
+
+
+
+
+
+
+
+
   };
 
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -365,6 +485,10 @@ const uploadImageToServer = async (file: File) => {
 
 
   const handleSave = async () => {
+
+    
+    // eslint-disable-next-line no-debugger
+    debugger
     // Validate passwords if user is trying to change them
     if ((passwords.new || passwords.confirm || passwords.current) && !validatePasswords()) {
       return;
@@ -386,9 +510,9 @@ const uploadImageToServer = async (file: File) => {
           updatedImage = "";
           
           // Update the UserImageContext and notify other components
-          setImageUrl(null);
+          
           const imageUpdatedEvent = new CustomEvent('userImageUpdated', { 
-            detail: { imageUrl: null } 
+            detail: { imageUrl: imageUrl } 
           });
           window.dispatchEvent(imageUpdatedEvent);
         } catch (error) {
@@ -419,33 +543,44 @@ const uploadImageToServer = async (file: File) => {
         }
       }
 
-      // In a real app, update other profile data here
-      await new Promise(resolve => setTimeout(resolve, 500));
+      // Send updated user information to the server
+      const token = sessionStorage.getItem("access_token");
+      const updateData = {
+        id: userId, 
+        Username: editedUser.name,
+        Email: editedUser.email,
+        CurrentPassword:editedUser.current,
+        NewPassword:editedUser.new,
+        ConfirmPassword:editedUser.confirm,
+        
 
-      try {
-        const response = await axios.get(`http://localhost:5001/api/User/${userId}`);
-        const updatedUser = {
-          name: response.data.username || "Not set",
-          email: response.data.email || "Not set",
-          role: response.data.roles[0] || "User",
-          joinDate: new Date().toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric'
-          }),
-          profileImage: updatedImage
-        };
-        setUser(updatedUser);
-      } catch (err) {
-        console.error("Failed to fetch user information:", err);
-        setNotification({
-          open: true,
-          message: "Failed to update profile information",
-          severity: "error"
-        });
-        setLoading(false);
-        return;
-      }
+      };
+
+      await axios.put(
+        'http://localhost:5001/api/user/update',
+        updateData,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            ...(token && { Authorization: `Bearer ${token}` })
+          }
+        }
+      );
+
+      // Fetch updated user information
+      const response = await axios.get(`http://localhost:5001/api/User/${userId}`);
+      const updatedUser = {
+        name: response.data.username || "Not set",
+        email: response.data.email || "Not set",
+        role: response.data.roles[0] || "User",
+        joinDate: new Date().toLocaleDateString('en-US', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric'
+        }),
+        profileImage: updatedImage
+      };
+      setUser(updatedUser);
 
       setIsEditing(false);
       
@@ -479,11 +614,24 @@ const uploadImageToServer = async (file: File) => {
       });
     } catch (err) {
       // Show error notification
-      setNotification({
-        open: true,
-        message: "Failed to update profile",
-        severity: "error"
-      });
+console.log(err.response.data[0].code)
+if(err.response.data[0].code=="PasswordMismatch"){
+
+  setNotification({
+    open: true,
+    message: "Incorrect password.",
+    severity: "error"
+  });
+
+
+
+}else{  setNotification({
+  open: true,
+  message: "Failed to update profile",
+  severity: "error"
+});}
+      
+    
       console.error("Error updating profile:", err);
     } finally {
       setLoading(false);
@@ -597,7 +745,7 @@ const uploadImageToServer = async (file: File) => {
                 variant={isEditing ? "outlined" : "contained"}
                 color={isEditing ? "error" : "primary"}
                 onClick={handleEditToggle}
-                disabled={loading}
+                disabled={loading || isEmailLogin}
                 startIcon={isEditing ? null : <EditIcon />}
               >
                 {isEditing ? "Cancel" : "Edit Profile"}
@@ -679,16 +827,17 @@ const uploadImageToServer = async (file: File) => {
             <Grid container spacing={3}>
               <Grid item xs={12} sm={6}>
                 <Typography variant="subtitle1" fontWeight="bold" gutterBottom color="primary.main">
-                  Full Name
+                  Username
                 </Typography>
                 {isEditing ? (
                   <TextField
                     fullWidth
                     name="name"
-                    value={user.name}
+                    value={editedUser.name}
                     onChange={handleChange}
                     variant="outlined"
                     size="small"
+                    type="text"
                   />
                 ) : (
                   <Typography variant="body1">{user.name}</Typography>
@@ -703,7 +852,7 @@ const uploadImageToServer = async (file: File) => {
                   <TextField
                     fullWidth
                     name="email"
-                    value={user.email}
+                    value={editedUser.email}
                     onChange={handleChange}
                     variant="outlined"
                     size="small"
@@ -749,7 +898,7 @@ const uploadImageToServer = async (file: File) => {
                         name="current"
                         type={showPasswords.current ? 'text' : 'password'}
                         value={passwords.current}
-                        onChange={handlePasswordChange}
+                        onChange={handleChange}
                         endAdornment={
                           <InputAdornment position="end">
                             <IconButton
@@ -782,7 +931,7 @@ const uploadImageToServer = async (file: File) => {
                         name="new"
                         type={showPasswords.new ? 'text' : 'password'}
                         value={passwords.new}
-                        onChange={handlePasswordChange}
+                        onChange={handleChange}
                         endAdornment={
                           <InputAdornment position="end">
                             <IconButton
@@ -815,7 +964,7 @@ const uploadImageToServer = async (file: File) => {
                         name="confirm"
                         type={showPasswords.confirm ? 'text' : 'password'}
                         value={passwords.confirm}
-                        onChange={handlePasswordChange}
+                        onChange={handleChange}
                         endAdornment={
                           <InputAdornment position="end">
                             <IconButton

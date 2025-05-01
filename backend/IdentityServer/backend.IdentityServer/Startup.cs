@@ -42,6 +42,8 @@ namespace backend.IdentityServer
                            .AllowCredentials();
                 });
             });
+            services.Configure<IdentityOptions>(opt =>
+            opt.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#._-+/ çğıöşüÇĞİÖŞÜ");
             services.AddLocalApiAuthentication();
             services.AddControllersWithViews();
             //services.AddTransient<IResourceOwnerPasswordValidator, CustomPasswordValidator>(); 

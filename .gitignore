@@ -10,7 +10,7 @@ static/
 pipeline/
 notebook/
 application.py
-README.md
+
 frontend/
 credential.json
 __pycache__
