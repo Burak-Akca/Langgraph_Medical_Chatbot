@@ -18,7 +18,7 @@ import AppTheme from '../shared-theme/AppTheme';
 import ColorModeSelect from '../shared-theme/ColorModeSelect';
 import { GoogleIcon, FacebookIcon, SitemarkIcon } from './components/CustomIcons';
 import { useGoogleLogin } from '@react-oauth/google';
-import { useUserImage } from '../../../Context/UserImageContext';
+import { useUserImage } from '../../../ Context/UserImageContext';
 
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';

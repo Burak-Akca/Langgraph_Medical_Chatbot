@@ -65,7 +65,8 @@ const ProfilePage: React.FC = () => {
 
   const [isEmailLogin, setIsEmailLogin] = useState(false);
 
-
+// eslint-disable-next-line no-debugger
+debugger
 
   useUserById({
     userId,

@@ -11,6 +11,6 @@ pipeline/
 notebook/
 application.py
 
-frontend/
+
 credential.json
 __pycache__
