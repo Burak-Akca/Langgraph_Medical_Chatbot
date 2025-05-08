@@ -95,7 +95,7 @@ const ContactPage: React.FC = () => {
     if (validateForm()) {
       setIsSubmitting(true);
       try {
-        const response = await axios.post("http://localhost:8002/api/contact", formData);
+        const response = await axios.post("https://localhost:7182/api/Email", formData);
         
         // Reset form
         setFormData({

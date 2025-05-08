@@ -13,17 +13,22 @@ namespace backend.EmailService.Services.EmailServices
             _config = config;
         }
 
+
         public async Task SendEmailAsync(EmailRequest request) // Add 'async' keyword
         {
             var apiKey = _config["SendGrid:ApiKey"];
 
             var client = new SendGridClient(apiKey);
-            var from = new EmailAddress("burakakca51@gmail.com", "Example User");
-            var subject = "Sending with SendGrid is Fun";
-            var to = new EmailAddress("burak07akca@gmail.com", "Example User");
-            var plainTextContent = "and easy to do anywhere, even with C#";
-            var htmlContent = "<strong>and easy to do anywhere, even with C#</strong>";
+
+            var to = new EmailAddress("info@burakakca.com.tr", "SymptomAI");
+            var subject = request.Subject;
+            var from = new EmailAddress("contact@burakakca.com.tr", "contact");
+            var plainTextContent = $"{request.Message}\n\nGönderen: {request.Email}";  // Göndereni plain text'e ekle
+            var htmlContent = $"<strong>{request.Message}</strong><br><br><strong>Gönderen: {request.Email}</strong>"; // Göndereni HTML'ye ekle
             var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent, htmlContent);
+
+            // Fix: Create an EmailAddress object for the ReplyTo property
+            msg.ReplyTo = new EmailAddress(request.Email, request.Name);
 
             var response = await client.SendEmailAsync(msg); // Await the async call
             if ((int)response.StatusCode >= 400)

@@ -16,7 +16,6 @@ namespace backend.EmailService.Controllers
         {
             _emailService = emailService;
         }
-
         [HttpPost]
         public async Task<IActionResult> Send([FromBody] EmailRequest request)
         {

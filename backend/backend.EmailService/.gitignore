@@ -1,0 +1,55 @@
+# .NET Core & .NET 5+ related
+bin/
+obj/
+out/
+
+# User-specific files
+.vs/
+.vscode/
+.idea/
+
+# User-specific files for Visual Studio
+.vs2019/
+.vs2017/
+
+# Windows Installer files
+*.cab
+*.msi
+*.msm
+*.msp
+
+# Windows Installer files (not related to .NET Core)
+Thumbs.db
+ehthumbs.db
+
+# ASP.NET temporary files
+wwwroot/
+node_modules/
+
+# Azure Web Apps publishing folder
+.publish/
+
+# JetBrains Rider's temporary folder
+.idea/
+
+# .NET Core/.NET SDK config files
+.project.json
+global.json
+
+# .NET Core and Visual Studio build logs
+*.log
+
+# Visual Studio for Mac build folder
+.vscode/
+
+# User-specific files for Visual Studio Code
+.vscode/launch.json
+.vscode/settings.json
+
+# User-specific files for Visual Studio debugging
+.vsdebug/
+##########
+properties/
+tempkey.jwk
+updateUI.ps1
+appsettings.json
