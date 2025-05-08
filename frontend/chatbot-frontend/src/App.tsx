@@ -13,6 +13,7 @@ import ContactPage from "./pages/ContactPage/ContactPage";
 import ProfilePage from "./pages/ProfilePage";
 import SignIn from "./pages/materialUI/sign-in/SignIn";
 import SignUp from "./pages/materialUI/sign-up/SignUp";
+import PaymentPage from "./pages/PaymentPage/PaymentPage";
 import "./App.css";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Unauthorized from "./pages/Unauthorized";
@@ -34,6 +35,7 @@ const App: React.FC = () => {
         <Route path="/home" element={<HomePage />} />
         <Route path="/about" element={<AboutPage />} />
         <Route path="/prices" element={<PricesPage />} />
+        <Route path="/payment" element={<PaymentPage />} />
         {/* <Route path="/conversation" element={<ConversationPage />} /> */}
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/signin" element={<SignIn />} />

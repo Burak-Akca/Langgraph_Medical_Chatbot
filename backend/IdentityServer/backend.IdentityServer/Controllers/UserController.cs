@@ -62,6 +62,8 @@ namespace backend.IdentityServer.Controllers
                 !string.IsNullOrEmpty(dto.NewPassword) &&
                 !string.IsNullOrEmpty(dto.ConfirmPassword))
             {
+               
+
                 if (dto.NewPassword != dto.ConfirmPassword)
                 {
                     return BadRequest("Yeni şifre ve tekrar şifre uyuşmuyor.");

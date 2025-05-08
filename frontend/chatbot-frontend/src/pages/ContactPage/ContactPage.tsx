@@ -22,6 +22,7 @@ import {
   LinkedIn as LinkedInIcon,
 } from "@mui/icons-material";
 import NavigationBar from "../../components/NavigationBar";
+import axios from "axios";
 
 interface ContactFormData {
   name: string;
@@ -40,6 +41,9 @@ const ContactPage: React.FC = () => {
 
   const [errors, setErrors] = useState<Partial<ContactFormData>>({});
   const [snackbarOpen, setSnackbarOpen] = useState<boolean>(false);
+  const [snackbarMessage, setSnackbarMessage] = useState<string>("");
+  const [snackbarSeverity, setSnackbarSeverity] = useState<"success" | "error">("success");
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -84,23 +88,35 @@ const ContactPage: React.FC = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent): void => {
+  // eslint-disable-next-line no-debugger
+  const handleSubmit = async (e: React.FormEvent): Promise<void> => {debugger
     e.preventDefault();
 
     if (validateForm()) {
-      // In a real app, you would send the form data to your backend here
-      console.log("Form submitted:", formData);
+      setIsSubmitting(true);
+      try {
+        const response = await axios.post("http://localhost:8002/api/contact", formData);
+        
+        // Reset form
+        setFormData({
+          name: "",
+          email: "",
+          subject: "",
+          message: "",
+        });
 
-      // Reset form
-      setFormData({
-        name: "",
-        email: "",
-        subject: "",
-        message: "",
-      });
-
-      // Show success message
-      setSnackbarOpen(true);
+        // Show success message
+        setSnackbarMessage("Your message has been sent successfully! We'll get back to you soon.");
+        setSnackbarSeverity("success");
+        setSnackbarOpen(true);
+      } catch (error) {
+        console.error("Error sending message:", error);
+        setSnackbarMessage("Failed to send message. Please try again later.");
+        setSnackbarSeverity("error");
+        setSnackbarOpen(true);
+      } finally {
+        setIsSubmitting(false);
+      }
     }
   };
 
@@ -138,7 +154,7 @@ const ContactPage: React.FC = () => {
                   <CardContent sx={{ display: "flex", alignItems: "center" }}>
                     <EmailIcon color="primary" sx={{ mr: 2 }} />
                     <Typography variant="body1">
-                      support@medicalchatbot.com
+                      burakakca51@gmail.com
                     </Typography>
                   </CardContent>
                 </Card>
@@ -202,6 +218,7 @@ const ContactPage: React.FC = () => {
                       onChange={handleChange}
                       error={!!errors.name}
                       helperText={errors.name}
+                      disabled={isSubmitting}
                     />
                   </Grid>
                   <Grid item xs={12} sm={6}>
@@ -215,6 +232,7 @@ const ContactPage: React.FC = () => {
                       onChange={handleChange}
                       error={!!errors.email}
                       helperText={errors.email}
+                      disabled={isSubmitting}
                     />
                   </Grid>
                   <Grid item xs={12}>
@@ -227,6 +245,7 @@ const ContactPage: React.FC = () => {
                       onChange={handleChange}
                       error={!!errors.subject}
                       helperText={errors.subject}
+                      disabled={isSubmitting}
                     />
                   </Grid>
                   <Grid item xs={12}>
@@ -241,6 +260,7 @@ const ContactPage: React.FC = () => {
                       onChange={handleChange}
                       error={!!errors.message}
                       helperText={errors.message}
+                      disabled={isSubmitting}
                     />
                   </Grid>
                 </Grid>
@@ -251,8 +271,9 @@ const ContactPage: React.FC = () => {
                   color="primary"
                   size="large"
                   sx={{ mt: 3 }}
+                  disabled={isSubmitting}
                 >
-                  Send Message
+                  {isSubmitting ? "Sending..." : "Send Message"}
                 </Button>
               </Box>
             </Paper>
@@ -266,10 +287,10 @@ const ContactPage: React.FC = () => {
         >
           <Alert
             onClose={handleSnackbarClose}
-            severity="success"
+            severity={snackbarSeverity}
             sx={{ width: "100%" }}
           >
-            Your message has been sent successfully! We'll get back to you soon.
+            {snackbarMessage}
           </Alert>
         </Snackbar>
       </Container>

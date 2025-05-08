@@ -1,4 +1,5 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Container,
   Typography,
@@ -27,6 +28,8 @@ interface PricingPlan {
 }
 
 const PricesPage: React.FC = () => {
+  const navigate = useNavigate();
+
   const pricingPlans: PricingPlan[] = [
     {
       title: "Basic",
@@ -69,6 +72,12 @@ const PricesPage: React.FC = () => {
       buttonText: "Contact Sales",
     },
   ];
+
+  const handleSubscribe = (plan: string) => {
+    if (plan === "Premium" || plan === "Professional") {
+      navigate("/payment");
+    }
+  };
 
   return (
     <div>
@@ -162,6 +171,7 @@ const PricesPage: React.FC = () => {
                     fullWidth
                     variant={plan.highlighted ? "contained" : "outlined"}
                     color="primary"
+                    onClick={() => handleSubscribe(plan.title)}
                   >
                     {plan.buttonText}
                   </Button>
