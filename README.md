@@ -330,8 +330,8 @@ This project is licensed under the MIT License. See [LICENSE](LICENSE) file for 
 ## 📞 Contact
 
 - **GitHub Issues**: [Project Issues](https://github.com/Burak-Akca/Langgraph_Medical_Chatbot/issues)
-- **Email**: [Add your email]
-- **LinkedIn**: [Add your LinkedIn profile]
+- **Email**: [burakakca51@gmail.com]
+- **LinkedIn**: [linkedin.com/in/burakakca51]
 
 ---
 
