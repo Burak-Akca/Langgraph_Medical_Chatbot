@@ -58,15 +58,7 @@ Modern medical information retrieval and chatbot system. Built with LangGraph, L
 ```
 
 ### LangGraph Workflow
-```
-Question → Router → [Web Search | RAG] → Grade Documents → Generate → Quality Check → End
-                ↓              ↓              ↓              ↓
-            Web Search    Retrieve      Grade Docs    Generate
-                ↓              ↓              ↓              ↓
-            Generate      Grade Docs    [Web Search | Generate]  Quality Check
-                ↓              ↓              ↓              ↓
-            End          [Web Search | Generate]  [Retry | End]  [End | Retry | Web Search]
-```
+![LangGraph Workflow](graph.png)
 
 ## 🛠️ Technologies
 
